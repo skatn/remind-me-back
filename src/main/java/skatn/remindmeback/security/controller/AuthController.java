@@ -24,6 +24,9 @@ public class AuthController {
     public void signup(@Valid @RequestBody SignupRequest request, BindingResult bindingResult) throws BindException {
         if(!Objects.equals(request.password(), request.passwordConfirm())) {
             bindingResult.reject("passwordNotMatch", "패스워드가 일치 하지 않습니다.");
+        }
+
+        if(bindingResult.hasErrors()) {
             throw new BindException(bindingResult);
         }
 

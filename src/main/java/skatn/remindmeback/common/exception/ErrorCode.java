@@ -12,6 +12,21 @@ public enum ErrorCode {
 
     // Auth
     ALREADY_USED_USERNAME(400, "AUTH_001", "이미 사용 중인 아이디 입니다."),
+    PERMISSION_DENIED(403, "AUTH_002", "권한이 없습니다."),
+    INVALID_USERNAME_OR_PASSWORD(401, "AUTH_003", "아이디 또는 비밀번호가 일치 하지 않습니다."),
+
+    JWT_NO_AUTHORITIES_KEY(401, "AUTH_004", "JWT에 권한 정보가 없습니다."),
+    JWT_INVALID_SIGNATURE(401, "AUTH_005", "잘못된 JWT 서명입니다."),
+    JWT_EXPIRED(401, "AUTH_006", "만료된 JWT 입니다."),
+    JWT_UNSUPPORTED(401, "AUTH_007", "지원되지 않는 JWT 입니다."),
+    JWT_INVALID(401, "AUTH_008", "JWT가 잘못되었습니다."),
+    JWT_NO_AUTHENTICATION_INFO(401, "AUTH_009", "인증정보가 없습니다."),
+    JWT_INVALID_REFRESH_TOKEN(401, "AUTH_010", "유효하지 않은 리프레시 토큰입니다."),
+    UN_AUTHORIZE(401, "AUTH_011", "인증 되지 않았습니다."),
+
+    // Member
+    MEMBER_NOT_FOUND(404, "MEMBER_001", "멤버를 찾을 수 없습니다.")
+
 
     ;
 

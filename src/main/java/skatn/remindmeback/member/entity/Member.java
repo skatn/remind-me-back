@@ -1,11 +1,9 @@
 package skatn.remindmeback.member.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 import skatn.remindmeback.common.entity.BaseTimeEntity;
 
 @Entity
@@ -26,4 +24,12 @@ public class Member extends BaseTimeEntity {
 
     @Column(length = 14, nullable = false)
     private String name;
+
+    @Builder.Default
+    @ColumnDefault("'ROLE_USER'")
+    private String role = "ROLE_USER";
+
+    @Builder.Default
+    @ColumnDefault("true")
+    private boolean isActive = true;
 }

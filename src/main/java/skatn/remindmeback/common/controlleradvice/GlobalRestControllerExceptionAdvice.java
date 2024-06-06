@@ -6,6 +6,8 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import skatn.remindmeback.common.controlleradvice.dto.BindErrorResponse;
+import skatn.remindmeback.common.controlleradvice.dto.ErrorResponse;
+import skatn.remindmeback.common.exception.BaseException;
 import skatn.remindmeback.common.exception.ErrorCode;
 
 @RestControllerAdvice
@@ -15,6 +17,13 @@ public class GlobalRestControllerExceptionAdvice {
     public ResponseEntity<BindErrorResponse> handleBindException(BindException e) {
         return new ResponseEntity<>(new BindErrorResponse(ErrorCode.INVALID_REQUEST_PARAMETER, e.getBindingResult()),
                 HttpStatus.valueOf(ErrorCode.INVALID_REQUEST_PARAMETER.getStatus()));
+    }
+
+    @ExceptionHandler()
+    public ResponseEntity<ErrorResponse> baseExHandle(BaseException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return new ResponseEntity<>(new ErrorResponse(errorCode),
+                HttpStatus.valueOf(errorCode.getStatus()));
     }
 
 
