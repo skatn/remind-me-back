@@ -81,10 +81,8 @@ public class RefreshTokenService {
 
     @Transactional
     public void deleteRefreshTokenGroup(String refreshToken) {
-        RefreshToken findRefreshToken = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new AuthException(ErrorCode.JWT_INVALID_REFRESH_TOKEN));
-
-        refreshTokenRepository.deleteByTokenGroup(findRefreshToken.getTokenGroup());
+        refreshTokenRepository.findByToken(refreshToken)
+                .ifPresent(token -> refreshTokenRepository.deleteByTokenGroup(token.getTokenGroup()));
     }
 
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정

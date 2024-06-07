@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import skatn.remindmeback.security.controller.dto.LogoutRequest;
 import skatn.remindmeback.security.controller.dto.ReissueTokenRequest;
 import skatn.remindmeback.security.controller.dto.SignupRequest;
 import skatn.remindmeback.security.jwt.TokenDto;
@@ -40,5 +41,11 @@ public class AuthController {
     @PostMapping("/reissue-token")
     public TokenDto reissueToken(@RequestBody ReissueTokenRequest request) {
         return refreshTokenService.reissue(request.refreshToken());
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@RequestBody LogoutRequest request) {
+        refreshTokenService.deleteRefreshTokenGroup(request.refreshToken());
     }
 }
