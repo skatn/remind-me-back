@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum ErrorCode {
 
     // Bind
-    INVALID_REQUEST_PARAMETER(400, "REQ_001", "요청 파라미터가 잘못되었습니다."),
+    BAD_REQUEST(400, "REQ_001", "요청이 잘못 되었습니다."),
 
     // Auth
     ALREADY_USED_USERNAME(400, "AUTH_001", "이미 사용 중인 아이디 입니다."),

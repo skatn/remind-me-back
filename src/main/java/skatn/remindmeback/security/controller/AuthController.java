@@ -7,8 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import skatn.remindmeback.security.controller.dto.ReissueTokenRequest;
 import skatn.remindmeback.security.controller.dto.SignupRequest;
+import skatn.remindmeback.security.jwt.TokenDto;
 import skatn.remindmeback.security.service.AuthService;
+import skatn.remindmeback.security.service.RefreshTokenService;
 
 import java.util.Objects;
 
@@ -18,6 +21,7 @@ import java.util.Objects;
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -31,5 +35,10 @@ public class AuthController {
         }
 
         authService.join(request.name(), request.username(), request.password());
+    }
+
+    @PostMapping("/reissue-token")
+    public TokenDto reissueToken(@RequestBody ReissueTokenRequest request) {
+        return refreshTokenService.reissue(request.refreshToken());
     }
 }
