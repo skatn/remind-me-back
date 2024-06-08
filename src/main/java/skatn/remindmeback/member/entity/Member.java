@@ -17,7 +17,7 @@ public class Member extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, length = 20, nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
     @Column(nullable = false)
     private String password;
@@ -28,6 +28,9 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @ColumnDefault("'ROLE_USER'")
     private String role = "ROLE_USER";
+
+    @Column(length = 15)
+    private String provider;
 
     @Builder.Default
     @ColumnDefault("true")
