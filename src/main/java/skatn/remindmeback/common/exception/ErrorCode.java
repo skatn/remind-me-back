@@ -25,7 +25,11 @@ public enum ErrorCode {
     INVALID_OAUTH_PROVIDER(400, "AUTH_012", "유효하지 않은 OAuth2 서비스 입니다."),
 
     // Member
-    MEMBER_NOT_FOUND(404, "MEMBER_001", "멤버를 찾을 수 없습니다.")
+    MEMBER_NOT_FOUND(404, "MEMBER_001", "멤버를 찾을 수 없습니다."),
+
+    // Subject
+    SUBJECT_NOT_FOUND(404, "SUB_001", "문제집을 촺을 수 없습니다."),
+
 
 
     ;
