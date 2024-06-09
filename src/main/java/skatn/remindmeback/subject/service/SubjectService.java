@@ -21,7 +21,7 @@ public class SubjectService {
     private final SubjectRepository subjectRepository;
 
     @Transactional
-    public Long create(Long authorId, String title, String color) {
+    public Long create(long authorId, String title, String color) {
         Member author = memberRepository.findById(authorId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -32,7 +32,7 @@ public class SubjectService {
                 .build()).getId();
     }
 
-    public SubjectDto findOne(Long subjectId) {
+    public SubjectDto findOne(long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
 
@@ -41,7 +41,7 @@ public class SubjectService {
 
     @Transactional
     @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectId)")
-    public void update(Long subjectId, String title, String color) {
+    public void update(long subjectId, String title, String color) {
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
 
@@ -51,9 +51,18 @@ public class SubjectService {
 
     @Transactional
     @PreAuthorize("@subjectAuthorizationManager.hasDeletePermission(authentication, #subjectId)")
-    public void delete(Long subjectId) {
+    public void delete(long subjectId) {
         subjectRepository.findById(subjectId)
                 .ifPresent(subjectRepository::delete);
+    }
+
+    @Transactional
+    @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectId)")
+    public void updateNotification(long subjectId, boolean enable) {
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
+
+        subject.changeEnableNotification(enable);
     }
 
 

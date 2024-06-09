@@ -1,10 +1,7 @@
 package skatn.remindmeback.subject.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 import skatn.remindmeback.common.entity.BaseTimeEntity;
@@ -25,6 +22,7 @@ public class Subject extends BaseTimeEntity {
     @Column(length = 6, nullable = false)
     private String color;
 
+    @Builder.Default
     @ColumnDefault("true")
     private boolean isEnableNotification = true;
 
@@ -37,5 +35,9 @@ public class Subject extends BaseTimeEntity {
 
     public void changeColor(String color) {
         this.color = color;
+    }
+
+    public void changeEnableNotification(boolean enable) {
+        this.isEnableNotification = enable;
     }
 }
