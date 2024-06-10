@@ -15,7 +15,7 @@ public class SubjectAuthorizationManager {
 
     private final EntityManager em;
 
-    public boolean hasWritePermission(Authentication authentication, Long subjectId) {
+    public boolean hasReadPermission(Authentication authentication, long subjectId) {
         AccountDto accountDto = (AccountDto) authentication.getPrincipal();
 
         try {
@@ -30,7 +30,22 @@ public class SubjectAuthorizationManager {
         }
     }
 
-    public boolean hasDeletePermission(Authentication authentication, Long subjectId) {
+    public boolean hasWritePermission(Authentication authentication, long subjectId) {
+        AccountDto accountDto = (AccountDto) authentication.getPrincipal();
+
+        try {
+            em.createQuery("select 1 from Subject s where s.id = :subjectId and s.author.id = :authorId", Integer.class)
+                    .setParameter("subjectId", subjectId)
+                    .setParameter("authorId", accountDto.id())
+                    .getSingleResult();
+
+            return true;
+        } catch (NoResultException e) {
+            return false;
+        }
+    }
+
+    public boolean hasDeletePermission(Authentication authentication, long subjectId) {
         AccountDto accountDto = (AccountDto) authentication.getPrincipal();
 
         try {

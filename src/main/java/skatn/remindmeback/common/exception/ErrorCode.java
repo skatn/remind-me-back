@@ -28,7 +28,10 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(404, "MEMBER_001", "멤버를 찾을 수 없습니다."),
 
     // Subject
-    SUBJECT_NOT_FOUND(404, "SUB_001", "문제집을 촺을 수 없습니다."),
+    SUBJECT_NOT_FOUND(404, "SUB_001", "문제집을 찾을 수 없습니다."),
+
+    // Question
+    QUESTION_NOT_FOUND(404, "Q_001", "문제를 찾을 수 없습니다."),
 
 
 

@@ -21,7 +21,7 @@ public class SubjectService {
     private final SubjectRepository subjectRepository;
 
     @Transactional
-    public Long create(long authorId, String title, String color) {
+    public long create(long authorId, String title, String color) {
         Member author = memberRepository.findById(authorId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -32,6 +32,7 @@ public class SubjectService {
                 .build()).getId();
     }
 
+    @PreAuthorize("@subjectAuthorizationManager.hasReadPermission(authentication, #subjectId)")
     public SubjectDto findOne(long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));

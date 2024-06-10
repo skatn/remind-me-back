@@ -1,5 +1,6 @@
 package skatn.remindmeback.common.controlleradvice;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,6 +17,7 @@ import skatn.remindmeback.common.exception.ErrorCode;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalRestControllerExceptionAdvice {
 
@@ -45,6 +47,7 @@ public class GlobalRestControllerExceptionAdvice {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleException(Exception e) {
+        log.error(e.getMessage(), e);
         return new HashMap<>(){{
             put("message", "Server error");
         }};

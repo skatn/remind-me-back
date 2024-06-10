@@ -26,7 +26,7 @@ public class Subject extends BaseTimeEntity {
     @ColumnDefault("true")
     private boolean isEnableNotification = true;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member author;
 
     public void changeTitle(String title) {
