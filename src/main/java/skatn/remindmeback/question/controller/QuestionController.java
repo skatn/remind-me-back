@@ -54,11 +54,14 @@ public class QuestionController {
     }
 
     private void validateCreateRequest(QuestionCreateRequest request, BindingResult bindingResult) throws BindException {
-        if (request.questionType() == QuestionType.CHOICE && request.answers().stream()
-                .filter(QuestionCreateRequest.AnswerDto::isAnswer)
-                .count() != 1L) {
+        if (request.questionType() == QuestionType.CHOICE) {
+            if(request.answers().stream()
+                    .filter(QuestionCreateRequest.AnswerDto::isAnswer)
+                    .count() != 1L)
+                bindingResult.reject("invalidChoiceAnswer", "답변의 정답은 1개만 있어야 합니다.");
 
-            bindingResult.reject("invalidChoiceAnswer", "답변의 정답은 1개만 있어야 합니다.");
+            if(request.answers().size() < 3 || request.answers().size() > 5)
+                bindingResult.reject("invalidChoiceAnswerCount", "답변은 3 ~ 5개 까지 작성할 수 있습니다.");
         }
         else if (request.questionType() == QuestionType.DESCRIPTIVE && request.answers().size() != 1) {
             bindingResult.reject("invalidDescriptiveAnswer", "답변은 1개만 있어야 합니다.");
