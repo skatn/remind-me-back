@@ -3,13 +3,18 @@ package skatn.remindmeback.question.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.question.controller.dto.QuestionCreateRequest;
 import skatn.remindmeback.question.controller.dto.QuestionCreateResponse;
+import skatn.remindmeback.question.controller.dto.QuestionScrollRequest;
 import skatn.remindmeback.question.controller.dto.QuestionUpdateRequest;
 import skatn.remindmeback.question.dto.QuestionDto;
+import skatn.remindmeback.question.repository.QuestionQueryRepository;
+import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
 import skatn.remindmeback.question.entity.QuestionType;
 import skatn.remindmeback.question.service.QuestionService;
 
@@ -19,6 +24,7 @@ import skatn.remindmeback.question.service.QuestionService;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final QuestionQueryRepository questionQueryRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -51,6 +57,12 @@ public class QuestionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("questionId") long questionId) {
         questionService.delete(questionId);
+    }
+
+    @GetMapping
+    @PreAuthorize("@subjectAuthorizationManager.hasReadPermission(authentication, #request.subjectId)")
+    public Scroll<QuestionScrollDto> scrollQuestionList(@Valid @ModelAttribute QuestionScrollRequest request) {
+        return questionQueryRepository.scrollQuestionList(request.getSubjectId(), request);
     }
 
     private void validateCreateRequest(QuestionCreateRequest request, BindingResult bindingResult) throws BindException {
