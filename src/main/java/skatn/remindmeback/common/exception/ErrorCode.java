@@ -25,7 +25,20 @@ public enum ErrorCode {
     INVALID_OAUTH_PROVIDER(400, "AUTH_012", "유효하지 않은 OAuth2 서비스 입니다."),
 
     // Member
-    MEMBER_NOT_FOUND(404, "MEMBER_001", "멤버를 찾을 수 없습니다.")
+    MEMBER_NOT_FOUND(404, "MEMBER_001", "멤버를 찾을 수 없습니다."),
+
+    // Subject
+    SUBJECT_NOT_FOUND(404, "SUB_001", "문제집을 찾을 수 없습니다."),
+
+    // Question
+    QUESTION_NOT_FOUND(404, "Q_001", "문제를 찾을 수 없습니다."),
+
+    // File
+    FILE_NOT_UPLOADED(500, "FILE_001", "파일을 업로드하지 못했습니다."),
+    FILE_NOT_DELETED(500, "FILE_002", "파일을 삭제하지 못했습니다."),
+    INVALID_FILE(400, "FILE_003", "유효하지 않은 파일입니다."),
+    FILE_NOT_LOADED(500, "FILE_004", "파일을 로드할 수 없습니다."),
+
 
 
     ;
