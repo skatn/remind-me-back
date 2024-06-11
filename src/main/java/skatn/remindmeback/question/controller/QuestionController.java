@@ -8,10 +8,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import skatn.remindmeback.common.scroll.Scroll;
-import skatn.remindmeback.question.controller.dto.QuestionCreateRequest;
-import skatn.remindmeback.question.controller.dto.QuestionCreateResponse;
-import skatn.remindmeback.question.controller.dto.QuestionScrollRequest;
-import skatn.remindmeback.question.controller.dto.QuestionUpdateRequest;
+import skatn.remindmeback.question.controller.dto.*;
 import skatn.remindmeback.question.dto.QuestionDto;
 import skatn.remindmeback.question.repository.QuestionQueryRepository;
 import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
@@ -63,6 +60,12 @@ public class QuestionController {
     @PreAuthorize("@subjectAuthorizationManager.hasReadPermission(authentication, #request.subjectId)")
     public Scroll<QuestionScrollDto> scrollQuestionList(@Valid @ModelAttribute QuestionScrollRequest request) {
         return questionQueryRepository.scrollQuestionList(request.getSubjectId(), request);
+    }
+
+    @PostMapping("/submit")
+    public QuestionMarkingResponse submit(@Valid @RequestBody QuestionMarkingRequest request) {
+        boolean correct = questionService.submit(request.questionId(), request.submittedAnswer());
+        return new QuestionMarkingResponse(correct);
     }
 
     private void validateCreateRequest(QuestionCreateRequest request, BindingResult bindingResult) throws BindException {
