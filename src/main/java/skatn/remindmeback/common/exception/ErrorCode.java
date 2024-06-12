@@ -32,6 +32,7 @@ public enum ErrorCode {
 
     // Question
     QUESTION_NOT_FOUND(404, "Q_001", "문제를 찾을 수 없습니다."),
+    ANSWER_NOT_FOUND(404, "Q_002", "답변을 찾을 수 없습니다."),
 
     // File
     FILE_NOT_UPLOADED(500, "FILE_001", "파일을 업로드하지 못했습니다."),

@@ -8,15 +8,19 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import skatn.remindmeback.common.scroll.Scroll;
-import skatn.remindmeback.question.controller.dto.QuestionCreateRequest;
-import skatn.remindmeback.question.controller.dto.QuestionCreateResponse;
-import skatn.remindmeback.question.controller.dto.QuestionScrollRequest;
-import skatn.remindmeback.question.controller.dto.QuestionUpdateRequest;
+import skatn.remindmeback.common.security.annotation.AuthUser;
+import skatn.remindmeback.common.security.dto.AccountDto;
+import skatn.remindmeback.question.controller.dto.*;
 import skatn.remindmeback.question.dto.QuestionDto;
 import skatn.remindmeback.question.repository.QuestionQueryRepository;
 import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
 import skatn.remindmeback.question.entity.QuestionType;
 import skatn.remindmeback.question.service.QuestionService;
+import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryQueryRepository;
+import skatn.remindmeback.submithistory.repository.dto.QuestionSubmitHistoryCountDto;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class QuestionController {
 
     private final QuestionService questionService;
     private final QuestionQueryRepository questionQueryRepository;
+    private final QuestionSubmitHistoryQueryRepository questionSubmitHistoryQueryRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -63,6 +68,22 @@ public class QuestionController {
     @PreAuthorize("@subjectAuthorizationManager.hasReadPermission(authentication, #request.subjectId)")
     public Scroll<QuestionScrollDto> scrollQuestionList(@Valid @ModelAttribute QuestionScrollRequest request) {
         return questionQueryRepository.scrollQuestionList(request.getSubjectId(), request);
+    }
+
+    @PostMapping("/submit")
+    public QuestionMarkingResponse submit(@Valid @RequestBody QuestionMarkingRequest request) {
+        boolean correct = questionService.submit(request.questionId(), request.submittedAnswer());
+        return new QuestionMarkingResponse(correct);
+    }
+
+    @GetMapping("/histories/{year}")
+    public Map<String, List<QuestionSubmitHistoryCountDto>> getDailyWithinYear(@AuthUser AccountDto accountDto, @PathVariable("year") int year) {
+        return questionSubmitHistoryQueryRepository.getDailyWithinYear(accountDto.id(), year);
+    }
+
+    @GetMapping("/histories/last-30-days")
+    public List<QuestionSubmitHistoryCountDto> getLast30Days(@AuthUser AccountDto accountDto) {
+        return questionSubmitHistoryQueryRepository.getLast30Days(accountDto.id());
     }
 
     private void validateCreateRequest(QuestionCreateRequest request, BindingResult bindingResult) throws BindException {
