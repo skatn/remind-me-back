@@ -81,6 +81,11 @@ public class QuestionController {
         return questionSubmitHistoryQueryRepository.getDailyWithinYear(accountDto.id(), year);
     }
 
+    @GetMapping("/histories/last-30-days")
+    public List<QuestionSubmitHistoryCountDto> getLast30Days(@AuthUser AccountDto accountDto) {
+        return questionSubmitHistoryQueryRepository.getLast30Days(accountDto.id());
+    }
+
     private void validateCreateRequest(QuestionCreateRequest request, BindingResult bindingResult) throws BindException {
         if (request.questionType() == QuestionType.CHOICE) {
             if(request.answers().stream()

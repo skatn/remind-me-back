@@ -24,6 +24,32 @@ public class QuestionSubmitHistoryQueryRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public List<QuestionSubmitHistoryCountDto> getLast30Days(long memberId) {
+        String sql = """
+                SELECT
+                    dates.date as date,
+                    count(qsh.id) as count
+                FROM (
+                    SELECT SUBDATE(CURDATE(), INTERVAL t2.i*10 + t1.i DAY) AS date
+                    FROM
+                      (SELECT 0 i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
+                      (SELECT 0 i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3) t2
+                    WHERE t2.i*10 + t1.i < 30
+                ) AS dates
+                LEFT JOIN
+                    question_submit_history AS qsh
+                    ON DATE_FORMAT(qsh.created_at, '%Y-%m-%d') = dates.date
+                    AND qsh.created_by = :memberId
+                GROUP BY date
+                ORDER BY date;
+                """;
+
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("memberId", memberId);
+
+        return jdbcTemplate.query(sql, param, historyCountRowMapper());
+    }
+
     public Map<String, List<QuestionSubmitHistoryCountDto>> getDailyWithinYear(long memberId, int year) {
         String sql = """
                 SELECT
@@ -41,8 +67,8 @@ public class QuestionSubmitHistoryQueryRepository {
                     question_submit_history AS qsh
                     ON DATE_FORMAT(qsh.created_at, '%Y-%m-%d') = dates.date
                     AND qsh.created_by = :memberId
-                GROUP BY dates.date
-                ORDER BY dates.date
+                GROUP BY date
+                ORDER BY date
                 """;
 
         MapSqlParameterSource param = new MapSqlParameterSource();
