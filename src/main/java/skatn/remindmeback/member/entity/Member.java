@@ -38,6 +38,10 @@ public class Member extends BaseTimeEntity {
     @ColumnDefault("true")
     private boolean isActive = true;
 
+    public void changeName(String name) {
+        this.name = name;
+    }
+
     public void changeActive(boolean isActive) {
         this.isActive = isActive;
     }

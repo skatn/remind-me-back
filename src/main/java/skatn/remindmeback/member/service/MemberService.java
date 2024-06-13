@@ -27,4 +27,12 @@ public class MemberService {
         refreshTokenRepository.deleteByMemberId(memberId);
     }
 
+    @Transactional
+    public void update(long memberId, String name) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+        member.changeName(name);
+    }
+
 }
