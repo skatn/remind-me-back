@@ -24,7 +24,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/question")
+@RequestMapping("/api/questions")
 public class QuestionController {
 
     private final QuestionService questionService;

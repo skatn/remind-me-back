@@ -15,7 +15,7 @@ import skatn.remindmeback.subject.service.SubjectService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/subject")
+@RequestMapping("/api/subjects")
 public class SubjectController {
 
     private final SubjectService subjectService;

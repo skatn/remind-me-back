@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
 import skatn.remindmeback.common.entity.BaseTimeEntity;
 
 @Entity
@@ -12,6 +13,7 @@ import skatn.remindmeback.common.entity.BaseTimeEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "members")
+@SQLRestriction("is_active = true")
 public class Member extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +37,12 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @ColumnDefault("true")
     private boolean isActive = true;
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changeActive(boolean isActive) {
+        this.isActive = isActive;
+    }
 }
