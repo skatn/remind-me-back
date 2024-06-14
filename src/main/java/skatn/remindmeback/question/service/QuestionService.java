@@ -135,6 +135,14 @@ public class QuestionService {
         if (failCount > 0) {
             log.warn("FCM 발송 총 {}건 중 {}건 성공, {}건 실패", questions.size(), questions.size() - failCount, failCount);
         }
+
+        Set<Long> questionIds = questions.stream()
+                .map(QuestionNotificationDto::id)
+                .collect(Collectors.toSet());
+
+        if(!questionIds.isEmpty()) {
+            questionRepository.clearNotificationTime(questionIds);
+        }
     }
 
     private QuestionSubmitHistory markingChoice(Question question, String submittedAnswer) {
