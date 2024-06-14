@@ -8,11 +8,16 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.common.scroll.ScrollRequest;
+import skatn.remindmeback.question.repository.dto.QuestionNotificationDto;
 import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static skatn.remindmeback.common.fcm.entity.QFcmToken.fcmToken;
+import static skatn.remindmeback.member.entity.QMember.member;
 import static skatn.remindmeback.question.entity.QQuestion.question1;
+import static skatn.remindmeback.subject.entity.QSubject.subject;
 
 @Repository
 @Transactional(readOnly = true)
@@ -37,12 +42,30 @@ public class QuestionQueryRepository {
                 .fetch();
 
         Long nextCursor = null;
-        if(questions.size() > scrollRequest.getSize()) {
+        if (questions.size() > scrollRequest.getSize()) {
             nextCursor = questions.get(questions.size() - 1).id();
             questions.remove(questions.size() - 1);
         }
 
         return new Scroll<>(questions, nextCursor, null);
+    }
+
+    public List<QuestionNotificationDto> getQuestionsForNotification(LocalDateTime time) {
+        return queryFactory.select(Projections.constructor(QuestionNotificationDto.class,
+                        question1.id,
+                        subject.title,
+                        question1.question,
+                        fcmToken.token
+                ))
+                .from(question1)
+                .join(question1.subject, subject)
+                .join(subject.author, member)
+                .join(fcmToken).on(fcmToken.member.id.eq(member.id))
+                .where(member.isActive.eq(true)
+                        .and(subject.isEnableNotification.eq(true))
+                        .and(question1.notificationTime.loe(time))
+                )
+                .fetch();
     }
 
     private BooleanExpression questionIdGoe(Long questionId) {
