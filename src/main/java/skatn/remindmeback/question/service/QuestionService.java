@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.exception.ErrorCode;
+import skatn.remindmeback.common.exception.FirebaseException;
 import skatn.remindmeback.common.fcm.service.FcmService;
 import skatn.remindmeback.common.similarirty.SimilarityAnalyzer;
 import skatn.remindmeback.question.dto.QuestionCreateDto;
@@ -55,6 +56,8 @@ public class QuestionService {
                 .explanation(createDto.explanation())
                 .subject(subject)
                 .build();
+
+        question.updateNotificationTime();
 
         Set<Answer> answers = createDto.answers().stream()
                 .map(answer -> Answer.builder()
@@ -113,6 +116,12 @@ public class QuestionService {
             case DESCRIPTIVE -> markingDescriptive(question, submittedAnswer);
         };
 
+        switch (history.getStatus()) {
+            case CORRECT -> question.increaseInterval();
+            case INCORRECT -> question.decreaseInterval();
+        }
+        question.updateNotificationTime();
+
         questionSubmitHistoryRepository.save(history);
 
         return history.getStatus() == HistoryStatus.CORRECT;
@@ -126,7 +135,7 @@ public class QuestionService {
         for (QuestionNotificationDto question : questions) {
             try {
                 fcmService.send(question.title(), question.body(), null, question.token());
-            } catch (Exception e) {
+            } catch (FirebaseException e) {
                 log.error("FCM 발송 실패 [{}]", question, e);
                 failCount++;
             }
