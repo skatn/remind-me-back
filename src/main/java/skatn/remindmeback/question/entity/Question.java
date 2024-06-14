@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 import skatn.remindmeback.common.entity.BaseTimeEntity;
 import skatn.remindmeback.subject.entity.Subject;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +36,8 @@ public class Question extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Answer> answers = new HashSet<>();
+
+    private LocalDateTime notificationTime;
 
     public void changeQuestion(String question) {
         this.question = question;

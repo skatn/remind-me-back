@@ -37,3 +37,4 @@ out/
 .vscode/
 
 /src/main/resources/application.yml
+/src/main/resources/firebase/remind-me-425810-firebase-adminsdk-ohilc-c41938de8c.json

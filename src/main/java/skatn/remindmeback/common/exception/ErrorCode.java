@@ -40,6 +40,9 @@ public enum ErrorCode {
     INVALID_FILE(400, "FILE_003", "유효하지 않은 파일입니다."),
     FILE_NOT_LOADED(500, "FILE_004", "파일을 로드할 수 없습니다."),
 
+    // Firebase
+    FAILED_SEND_FCM(500, "FB_001", "Push 알림 발송에 실패 했습니다.")
+
 
 
     ;
