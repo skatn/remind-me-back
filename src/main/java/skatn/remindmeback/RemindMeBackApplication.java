@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@ConfigurationPropertiesScan
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class RemindMeBackApplication {
 
     public static void main(String[] args) {
