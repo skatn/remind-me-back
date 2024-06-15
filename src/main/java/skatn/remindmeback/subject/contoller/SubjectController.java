@@ -53,7 +53,7 @@ public class SubjectController {
 
     @GetMapping
     public Scroll<SubjectScrollDto> scrollSubjectList(@AuthUser AccountDto accountDto, @Valid @ModelAttribute SubjectScrollRequest request) {
-        return subjectQueryRepository.scrollSubjectList(accountDto.id(), request);
+        return subjectQueryRepository.scrollSubjectList(accountDto.id(), request, request.getTitle());
     }
 
 }

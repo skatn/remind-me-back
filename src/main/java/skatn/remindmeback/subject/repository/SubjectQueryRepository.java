@@ -27,7 +27,7 @@ public class SubjectQueryRepository {
         this.queryFactory = new JPAQueryFactory(entityManager);
     }
 
-    public Scroll<SubjectScrollDto> scrollSubjectList(long memberId, ScrollRequest<Long, Long> scrollRequest) {
+    public Scroll<SubjectScrollDto> scrollSubjectList(long memberId, ScrollRequest<Long, Long> scrollRequest, String title) {
         List<SubjectScrollDto> subjects = queryFactory.select(Projections.constructor(SubjectScrollDto.class,
                         subject.id,
                         subject.title,
@@ -37,7 +37,7 @@ public class SubjectQueryRepository {
                                 .where(question1.subject.eq(subject))
                 ))
                 .from(subject)
-                .where(subject.author.id.eq(memberId), subjectIdLoe(scrollRequest.getCursor()))
+                .where(subject.author.id.eq(memberId), subjectIdLoe(scrollRequest.getCursor()), titleContains(title))
                 .orderBy(subject.id.desc())
                 .limit(scrollRequest.getSize() + 1)
                 .fetch();
@@ -49,5 +49,9 @@ public class SubjectQueryRepository {
 
     private BooleanExpression subjectIdLoe(Long subjectId) {
         return subjectId == null ? null : subject.id.loe(subjectId);
+    }
+
+    private BooleanExpression titleContains(String title) {
+        return title == null ? null : subject.title.contains(title);
     }
 }

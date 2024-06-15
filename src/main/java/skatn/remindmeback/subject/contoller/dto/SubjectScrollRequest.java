@@ -1,5 +1,6 @@
 package skatn.remindmeback.subject.contoller.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,5 +11,7 @@ import skatn.remindmeback.common.scroll.ScrollRequest;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public class SubjectScrollRequest extends ScrollRequest<Long, Long> {
+    private String title;
 }
