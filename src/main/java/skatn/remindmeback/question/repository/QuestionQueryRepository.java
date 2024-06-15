@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.common.scroll.ScrollRequest;
+import skatn.remindmeback.common.scroll.ScrollUtils;
 import skatn.remindmeback.question.repository.dto.QuestionNotificationDto;
 import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
 
@@ -41,11 +42,7 @@ public class QuestionQueryRepository {
                 .limit(scrollRequest.getSize() + 1)
                 .fetch();
 
-        Long nextCursor = null;
-        if (questions.size() > scrollRequest.getSize()) {
-            nextCursor = questions.get(questions.size() - 1).id();
-            questions.remove(questions.size() - 1);
-        }
+        Long nextCursor = ScrollUtils.getNextCursor(questions, scrollRequest.getSize(), QuestionScrollDto::id);
 
         return new Scroll<>(questions, nextCursor, null);
     }

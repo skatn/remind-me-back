@@ -4,13 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.common.security.annotation.AuthUser;
 import skatn.remindmeback.common.security.dto.AccountDto;
-import skatn.remindmeback.subject.contoller.dto.SubjectCreateRequest;
-import skatn.remindmeback.subject.contoller.dto.SubjectCreateResponse;
-import skatn.remindmeback.subject.contoller.dto.SubjectNotificationUpdateRequest;
-import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
+import skatn.remindmeback.subject.contoller.dto.*;
 import skatn.remindmeback.subject.dto.SubjectDto;
+import skatn.remindmeback.subject.repository.SubjectQueryRepository;
+import skatn.remindmeback.subject.repository.dto.SubjectScrollDto;
 import skatn.remindmeback.subject.service.SubjectService;
 
 @RestController
@@ -19,6 +19,7 @@ import skatn.remindmeback.subject.service.SubjectService;
 public class SubjectController {
 
     private final SubjectService subjectService;
+    private final SubjectQueryRepository subjectQueryRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -48,6 +49,11 @@ public class SubjectController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("subjectId") long subjectId) {
         subjectService.delete(subjectId);
+    }
+
+    @GetMapping
+    public Scroll<SubjectScrollDto> scrollSubjectList(@AuthUser AccountDto accountDto, @Valid @ModelAttribute SubjectScrollRequest request) {
+        return subjectQueryRepository.scrollSubjectList(accountDto.id(), request, request.getTitle());
     }
 
 }
