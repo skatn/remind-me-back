@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public record QuestionDto(
         long id,
+        String question,
         QuestionType questionType,
         String explanation,
         Set<AnswerDto> answers
@@ -15,6 +16,7 @@ public record QuestionDto(
     public QuestionDto(Question question) {
         this(
                 question.getId(),
+                question.getQuestion(),
                 question.getQuestionType(),
                 question.getExplanation(),
                 question.getAnswers().stream()
