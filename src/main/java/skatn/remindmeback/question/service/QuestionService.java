@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.exception.ErrorCode;
 import skatn.remindmeback.common.exception.FirebaseException;
@@ -52,6 +53,7 @@ public class QuestionService {
 
         Question question = Question.builder()
                 .question(createDto.question())
+                .questionImage(createDto.questionImage())
                 .questionType(createDto.questionType())
                 .explanation(createDto.explanation())
                 .subject(subject)
@@ -94,6 +96,10 @@ public class QuestionService {
                         .isAnswer(answerDto.isAnswer())
                         .build())
                 .collect(Collectors.toSet()));
+
+        if (StringUtils.hasText(updateDto.questionImage())) {
+            question.changeQuestionImage(updateDto.questionImage());
+        }
     }
 
     @Transactional
@@ -149,7 +155,7 @@ public class QuestionService {
                 .map(QuestionNotificationDto::id)
                 .collect(Collectors.toSet());
 
-        if(!questionIds.isEmpty()) {
+        if (!questionIds.isEmpty()) {
             questionRepository.clearNotificationTime(questionIds);
         }
     }
