@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public record QuestionCreateRequest(
         @NotNull Long subjectId,
         @NotBlank String question,
+        String questionImage,
         @NotNull QuestionType questionType,
         @NotBlank String explanation,
         @Valid @NotNull Set<AnswerDto> answers
@@ -28,6 +29,7 @@ public record QuestionCreateRequest(
         return new QuestionCreateDto(
                 subjectId,
                 question,
+                questionImage,
                 questionType,
                 explanation,
                 answers.stream().map(AnswerDto::toAnswerDto).collect(Collectors.toSet())

@@ -7,6 +7,7 @@ import java.util.Set;
 public record QuestionCreateDto(
         long subjectId,
         String question,
+        String questionImage,
         QuestionType questionType,
         String explanation,
         Set<AnswerDto> answers

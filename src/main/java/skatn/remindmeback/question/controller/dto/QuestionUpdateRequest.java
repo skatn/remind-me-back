@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 public record QuestionUpdateRequest(
         @NotBlank String question,
+        String questionImage,
         @NotNull QuestionType questionType,
         @NotBlank String explanation,
         @NotNull Set<AnswerDto> answers
@@ -24,6 +25,7 @@ public record QuestionUpdateRequest(
         return new QuestionUpdateDto(
                 questionId,
                 question,
+                questionImage,
                 questionType,
                 explanation,
                 answers.stream().map(AnswerDto::toAnswerDto).collect(Collectors.toSet())

@@ -7,6 +7,7 @@ import java.util.Set;
 public record QuestionUpdateDto(
         long questionId,
         String question,
+        String questionImage,
         QuestionType questionType,
         String explanation,
         Set<AnswerDto> answers

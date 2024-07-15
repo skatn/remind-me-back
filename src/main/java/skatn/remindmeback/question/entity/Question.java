@@ -29,6 +29,8 @@ public class Question extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "text")
     private String question;
 
+    private String questionImage;
+
     @Column(columnDefinition = "text")
     private String explanation;
 
@@ -48,6 +50,10 @@ public class Question extends BaseTimeEntity {
 
     public void changeQuestion(String question) {
         this.question = question;
+    }
+
+    public void changeQuestionImage(String questionImage) {
+        this.questionImage = questionImage;
     }
 
     public void changeExplanation(String explanation) {
