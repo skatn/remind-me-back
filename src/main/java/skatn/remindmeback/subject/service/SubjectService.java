@@ -57,6 +57,14 @@ public class SubjectService {
                 .ifPresent(subjectRepository::delete);
     }
 
+    @PreAuthorize("@subjectAuthorizationManager.hasReadPermission(authentication, #subjectId)")
+    public boolean getNotificationStatus(long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
+
+        return subject.isEnableNotification();
+    }
+
     @Transactional
     @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectId)")
     public void updateNotification(long subjectId, boolean enable) {
@@ -65,6 +73,5 @@ public class SubjectService {
 
         subject.changeEnableNotification(enable);
     }
-
 
 }

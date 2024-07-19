@@ -39,6 +39,12 @@ public class SubjectController {
         subjectService.update(subjectId, request.title(), request.color());
     }
 
+    @GetMapping("/{subjectId}/notification")
+    public SubjectNotificationResponse getNotificationStatus(@PathVariable("subjectId") long subjectId) {
+        boolean isEnable = subjectService.getNotificationStatus(subjectId);
+        return new SubjectNotificationResponse(isEnable);
+    }
+
     @PatchMapping("/{subjectId}/notification")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateNotification(@PathVariable("subjectId") long subjectId, @Valid @RequestBody SubjectNotificationUpdateRequest request) {
