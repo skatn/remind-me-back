@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import skatn.remindmeback.common.entity.BaseTimeEntity;
 import skatn.remindmeback.member.entity.Member;
 
@@ -12,6 +14,8 @@ import skatn.remindmeback.member.entity.Member;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update subject set deleted = true where id = ?")
+@SQLRestriction("deleted = false")
 public class Subject extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +32,8 @@ public class Subject extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member author;
+
+    private boolean deleted;
 
     public void changeTitle(String title) {
         this.title = title;
