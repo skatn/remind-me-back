@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import skatn.remindmeback.common.entity.BaseTimeEntity;
 import skatn.remindmeback.subject.entity.Subject;
 
@@ -16,6 +18,8 @@ import java.util.Set;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update question set deleted = true where id = ?")
+@SQLRestriction("deleted = false")
 public class Question extends BaseTimeEntity {
 
     @Id
@@ -47,6 +51,8 @@ public class Question extends BaseTimeEntity {
     @ColumnDefault("30")
     @Column(name = "intervals")
     private int interval = 30; // 분 단위
+
+    private boolean deleted;
 
     public void changeQuestion(String question) {
         this.question = question;
