@@ -6,7 +6,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.exception.ErrorCode;
 import skatn.remindmeback.common.exception.FirebaseException;
@@ -88,6 +87,7 @@ public class QuestionService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.QUESTION_NOT_FOUND));
 
         question.changeQuestion(updateDto.question());
+        question.changeQuestionImage(updateDto.questionImage());
         question.changeQuestionType(updateDto.questionType());
         question.changeExplanation(updateDto.explanation());
         question.changeAnswers(updateDto.answers().stream()
@@ -96,10 +96,6 @@ public class QuestionService {
                         .isAnswer(answerDto.isAnswer())
                         .build())
                 .collect(Collectors.toSet()));
-
-        if (StringUtils.hasText(updateDto.questionImage())) {
-            question.changeQuestionImage(updateDto.questionImage());
-        }
     }
 
     @Transactional
