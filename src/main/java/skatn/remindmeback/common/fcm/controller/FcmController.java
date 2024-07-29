@@ -22,4 +22,10 @@ public class FcmController {
         fcmService.addToken(accountDto.id(), request.token());
 
     }
+
+    @PostMapping("/test")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void test(@RequestParam String title, @RequestParam String body, @RequestParam String token) {
+        fcmService.send(title, body, "0", token);
+    }
 }
