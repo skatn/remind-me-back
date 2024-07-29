@@ -31,6 +31,7 @@ public class GlobalRestControllerExceptionAdvice {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleBaseException(BaseException e) {
+        log.error(e.getMessage(), e);
         return errorCodeToErrorResponse(e.getErrorCode());
     }
 

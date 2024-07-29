@@ -136,7 +136,7 @@ public class QuestionService {
 
         for (QuestionNotificationDto question : questions) {
             try {
-                fcmService.send(question.title(), question.body(), null, question.token());
+                fcmService.send(question.title(), question.body(), String.valueOf(question.id()), question.token());
             } catch (FirebaseException e) {
                 log.error("FCM 발송 실패 [{}]", question, e);
                 failCount++;

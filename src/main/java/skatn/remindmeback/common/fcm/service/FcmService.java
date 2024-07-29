@@ -28,13 +28,13 @@ public class FcmService {
     private final FcmTokenRepository fcmTokenRepository;
     private final MemberRepository memberRepository;
 
-    public void send(String title, String body, String image, String token) {
+    public void send(String title, String body, String questionId, String token) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + getAccessToken());
 
-        HttpEntity<FcmDto> http = new HttpEntity<>(createMessage(title, body, image, token), headers);
+        HttpEntity<FcmDto> http = new HttpEntity<>(createMessage(title, body, questionId, token), headers);
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(fcmProperties.sendApiUrl(), HttpMethod.POST, http, String.class);
@@ -77,14 +77,14 @@ public class FcmService {
         }
     }
 
-    private FcmDto createMessage(String title, String body, String image, String token) {
+    private FcmDto createMessage(String title, String body, String questionId, String token) {
         return new FcmDto(
                 false,
                 new FcmDto.Message(
-                        new FcmDto.Notification(
+                        new FcmDto.Data(
                                 title,
                                 body,
-                                image
+                                questionId
                         ),
                         token
                 )
