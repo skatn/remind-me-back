@@ -19,6 +19,7 @@ import skatn.remindmeback.member.repository.MemberRepository;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +29,14 @@ public class FcmService {
     private final FcmTokenRepository fcmTokenRepository;
     private final MemberRepository memberRepository;
 
-    public void send(String title, String body, String questionId, String token) {
+    public void send(Map<String, String> data, String token) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + getAccessToken());
 
-        HttpEntity<FcmDto> http = new HttpEntity<>(createMessage(title, body, questionId, token), headers);
+        FcmDto fcmDto = new FcmDto(false, new FcmDto.Message(data, token));
+        HttpEntity<FcmDto> http = new HttpEntity<>(fcmDto, headers);
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(fcmProperties.sendApiUrl(), HttpMethod.POST, http, String.class);
@@ -75,19 +77,5 @@ public class FcmService {
         } catch (IOException e) {
             throw new FirebaseException(ErrorCode.FAILED_SEND_FCM, e);
         }
-    }
-
-    private FcmDto createMessage(String title, String body, String questionId, String token) {
-        return new FcmDto(
-                false,
-                new FcmDto.Message(
-                        new FcmDto.Data(
-                                title,
-                                body,
-                                questionId
-                        ),
-                        token
-                )
-        );
     }
 }

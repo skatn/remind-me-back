@@ -9,6 +9,8 @@ import skatn.remindmeback.common.fcm.service.FcmService;
 import skatn.remindmeback.common.security.annotation.AuthUser;
 import skatn.remindmeback.common.security.dto.AccountDto;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/fcm")
@@ -25,7 +27,10 @@ public class FcmController {
 
     @PostMapping("/test")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void test(@RequestParam String title, @RequestParam String body, @RequestParam String token) {
-        fcmService.send(title, body, "0", token);
+    public void test(@RequestBody TestRequest request) {
+        fcmService.send(request.data(), request.token());
+    }
+
+    public record TestRequest (String token, Map<String, String> data){
     }
 }
