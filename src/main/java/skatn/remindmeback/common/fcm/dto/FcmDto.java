@@ -1,10 +1,9 @@
 package skatn.remindmeback.common.fcm.dto;
 
-public record FcmDto(boolean validateOnly, Message message) {
-    public record Message(Data data, String token) {
-    }
+import java.util.Map;
 
-    public record Data(String title, String body, String questionId) {
+public record FcmDto(boolean validateOnly, Message message) {
+    public record Message(Map<String, String> data, String token) {
     }
 
 }

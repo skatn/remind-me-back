@@ -27,6 +27,7 @@ import skatn.remindmeback.submithistory.entity.QuestionSubmitHistory;
 import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryRepository;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -136,7 +137,12 @@ public class QuestionService {
 
         for (QuestionNotificationDto question : questions) {
             try {
-                fcmService.send(question.title(), question.body(), String.valueOf(question.id()), question.token());
+                HashMap<String, String> data = new HashMap<>() {{
+                    put("title", question.title());
+                    put("body", question.body());
+                    put("questionId", String.valueOf(question.questionId()));
+                }};
+                fcmService.send(data, question.token());
             } catch (FirebaseException e) {
                 log.error("FCM 발송 실패 [{}]", question, e);
                 failCount++;
@@ -148,7 +154,7 @@ public class QuestionService {
         }
 
         Set<Long> questionIds = questions.stream()
-                .map(QuestionNotificationDto::id)
+                .map(QuestionNotificationDto::questionId)
                 .collect(Collectors.toSet());
 
         if (!questionIds.isEmpty()) {

@@ -50,6 +50,7 @@ public class QuestionQueryRepository {
     public List<QuestionNotificationDto> getQuestionsForNotification(LocalDateTime time) {
         return queryFactory.select(Projections.constructor(QuestionNotificationDto.class,
                         question1.id,
+                        subject.id,
                         subject.title,
                         question1.question,
                         fcmToken.token
