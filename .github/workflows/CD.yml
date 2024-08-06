@@ -33,13 +33,13 @@ jobs:
 
     - name: Make application.yml
       run: |
-        cd ./src/main/resources
-        echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+        mkdir -p ./src/main/resources
+        echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
 
     - name: Make firebase.json
       run: |
-        cd ./src/main/resources
-        echo "${{ secrets.FIREBASE_JSON }}" > ./remind-me-firebase.json
+        mkdir -p ./src/main/resources/firebase
+        echo "${{ secrets.FIREBASE_JSON }}" > ./src/main/resources/firebase/remind-me-firebase.json
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
