@@ -50,11 +50,11 @@ jobs:
     - name: Extract version from gradle.properties
       id: extract_version
       run: |
-        VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
-        echo "::set-output name=VERSION::$VERSION"
+        VERSION=$(./gradlew properties -q | grep 'version:' | awk '{print $2}')
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Verify extracted version
-      run: echo "The extracted version is ${{ steps.extract_version.outputs.VERSION }}"
+      run: echo "The extracted version is ${{ env.VERSION }}"
 
     - name: DockerHub Login
       uses: docker/login-action@v3.3.0
@@ -64,13 +64,11 @@ jobs:
 
     - name: Docker image Build
       run:
-        VERSION=${{ steps.extract_version.outputs.VERSION }}
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:$VERSION .
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ env.VERSION }} .
 
     - name: DockerHub push
       run:
-        VERSION=${{ steps.extract_version.outputs.VERSION }}
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:$VERSION
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:$${{ env.VERSION }}
       
 
   deploy:
