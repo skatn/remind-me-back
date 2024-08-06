@@ -23,6 +23,11 @@ jobs:
       run: |
         echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
+    - name: Make firebase.json
+      run: |
+        mkdir ./src/main/resources/firebase
+        echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/firebase/remind-me-firebase.json
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
