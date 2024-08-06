@@ -53,6 +53,9 @@ jobs:
         VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
         echo "::set-output name=VERSION::$VERSION"
 
+    - name: Verify extracted version
+      run: echo "The extracted version is ${{ steps.extract_version.outputs.VERSION }}"
+
     - name: DockerHub Login
       uses: docker/login-action@v3.3.0
       with:
@@ -80,5 +83,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           
           script: |
+            cd ./remind-me
             docker-compose up -d
             docker image prune -a -f
