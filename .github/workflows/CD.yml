@@ -85,5 +85,6 @@ jobs:
           
           script: |
             cd ./remind-me
+            docker-compose pull
             docker-compose up -d
             docker image prune -a -f
