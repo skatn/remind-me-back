@@ -74,3 +74,21 @@ configurations {
     querydsl.extendsFrom compileClasspath
 }
 //querydsl 추가 끝
+
+
+tasks.register('copyPrivates', Copy) {
+    copy {
+        from './privates'
+        include 'application.yml'
+        into './src/main/resources'
+    }
+    copy {
+        from './privates'
+        include 'remind-me-firebase.json'
+        into './src/main/resources/firebase'
+    }
+}
+
+tasks.named("build") {
+    dependsOn("copyPrivates")
+}
