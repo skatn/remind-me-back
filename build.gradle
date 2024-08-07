@@ -80,12 +80,12 @@ tasks.register('copyPrivates', Copy) {
     copy {
         from './privates'
         include 'application.yml'
-        into './src/main/resources'
+        into "${project.projectDir}/src/main/resources"
     }
     copy {
         from './privates'
         include 'remind-me-firebase.json'
-        into './src/main/resources/firebase'
+        into "${project.projectDir}/src/main/resources/firebase"
     }
 }
 
