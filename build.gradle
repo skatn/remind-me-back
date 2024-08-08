@@ -55,6 +55,9 @@ dependencies {
 
     // Firebase
     implementation "com.google.firebase:firebase-admin:9.2.0"
+
+    //prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
