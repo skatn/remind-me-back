@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+    <!-- Console log properties -->
+    <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%5level) --- %magenta([%thread] [%X{request_id:-startup}]) %-40.40logger{39} : %msg %n" />
+
+    <!-- Log file properties -->
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%5level) --- %magenta([%thread] [%X{request_id:-startup}]) %-40.40logger{39} : %msg %n" />
+    <property name="LOG_FILE_NAME" value="./logs/application.log" />
+    <property name="ROLLING_LOG_FILE_NAME_PATTERN" value="${LOG_FILE_NAME}-%d{yyyy-MM-dd}.%i.gz" />
+    <property name="MAX_FILE_SIZE" value="10MB" />  <!-- 파일 분할 용량 기준 -->
+    <property name="TOTAL_SIZE" value="1GB" /> <!-- 로그 파일 전체 용량 제한 -->
+    <property name="MAX_HISTORY" value="10" /> <!-- 보관할 최대 파일 수 -->
+    
+    <!-- Error log file properties -->
+    <property name="ERROR_LOG_FILE_NAME" value="./logs/error/application.log" />
+    <property name="ROLLING_ERROR_LOG_FILE_NAME_PATTERN" value="${ERROR_LOG_FILE_NAME}-%d{yyyy-MM-dd}.%i.gz" />
+    <property name="MAX_ERROR_FILE_SIZE" value="10MB" />
+    <property name="TOTAL_ERROR_SIZE" value="1GB" />
+    <property name="MAX_ERROR_HISTORY" value="10" />
+    
+
+    <!-- Console appender 설정 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ROLLING_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+
+        <file>${LOG_FILE_NAME}</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${ROLLING_LOG_FILE_NAME_PATTERN}</fileNamePattern>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <totalSizeCap>${TOTAL_SIZE}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+
+
+    <appender name="ROLLING_ERROR_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+
+        <file>${ERROR_LOG_FILE_NAME}</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${ROLLING_ERROR_LOG_FILE_NAME_PATTERN}</fileNamePattern>
+            <maxHistory>${MAX_ERROR_HISTORY}</maxHistory>
+            <maxFileSize>${MAX_ERROR_FILE_SIZE}</maxFileSize>
+            <totalSizeCap>${TOTAL_ERROR_SIZE}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLING_LOG_FILE" />
+        <appender-ref ref="ROLLING_ERROR_LOG_FILE" />
+    </root>
+</configuration>
