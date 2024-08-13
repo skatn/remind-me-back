@@ -9,6 +9,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.5'
+    id 'jacoco'
 }
 
 group = 'skatn'
@@ -62,6 +63,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy('jacocoTestReport')
 }
 
 //querydsl 추가 시작
@@ -95,4 +97,72 @@ tasks.register('copyPrivates', Copy) {
 
 tasks.named("compileJava") {
     dependsOn("copyPrivates")
+}
+
+jacocoTestReport {
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+    }
+
+    def Qdomains = []
+    for (qPattern in '**/QA'..'**/QZ') {
+        Qdomains.add(qPattern + '*')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: [
+                            '**/*Application*',
+                            '**/common/config/**',
+                            '**/common/controlleradvice/**',
+                            '**/common/exception/**',
+                            '**/common/file/**',
+                            '**/common/log/**',
+                            '**/common/security/**',
+                    ] + Qdomains)
+                })
+        )
+    }
+
+    finalizedBy('jacocoTestCoverageVerification')
+}
+
+jacocoTestCoverageVerification {
+    def Qdomains = []
+    for (qPattern in '**.QA'..'**.QZ') {
+        Qdomains.add(qPattern + '*')
+    }
+
+    violationRules {
+        rule {
+            enabled = true
+
+            element = 'CLASS'
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 1
+            }
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 1
+            }
+
+            excludes = [
+                    '**.*Application*',
+                    '**.common.config.**',
+                    '**.common.controlleradvice.**',
+                    '**.common.exception.**',
+                    '**.common.file.**',
+                    '**.common.log.**',
+                    '**.common.security.**',
+            ] + Qdomains
+        }
+    }
 }
