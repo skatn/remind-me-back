@@ -1,5 +1,6 @@
 package skatn.remindmeback.question.service;
 
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +27,9 @@ import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryReposito
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -123,7 +124,9 @@ class QuestionServiceTest {
         assertThat(question.getQuestionImage()).isEqualTo(updateDto.questionImage());
         assertThat(question.getQuestionType()).isEqualTo(updateDto.questionType());
         assertThat(question.getExplanation()).isEqualTo(updateDto.explanation());
-        assertThat(areAnswersEqual(question.getAnswers(), updateDto.answers())).isTrue();
+        assertThat(question.getAnswers())
+                .extracting("answer", "isAnswer")
+                .contains(updateDto.answers().stream().map(dto -> tuple(dto.answer(), dto.isAnswer())).toArray(Tuple[]::new));
     }
 
     @Test
@@ -210,19 +213,6 @@ class QuestionServiceTest {
 
         // then
         then(fcmService).should(times(notificationDtos.size())).send(any(), any());
-    }
-
-    private boolean areAnswersEqual(Set<Answer> a, Set<QuestionUpdateDto.AnswerDto> b) {
-        if(a.size() != b.size()) return false;
-
-        for(Answer answer: a) {
-            boolean found = b.stream()
-                    .anyMatch(dto -> answer.getAnswer().equals(dto.answer()) && answer.isAnswer() == dto.isAnswer());
-
-            if(!found) return false;
-        }
-
-        return true;
     }
 
 }
