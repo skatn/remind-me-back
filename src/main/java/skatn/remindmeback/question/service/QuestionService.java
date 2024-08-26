@@ -163,17 +163,22 @@ public class QuestionService {
     }
 
     private QuestionSubmitHistory markingChoice(Question question, String submittedAnswer) {
-        QuestionSubmitHistory.QuestionSubmitHistoryBuilder<?, ?> builder = QuestionSubmitHistory.builder()
+        boolean correct = question.getAnswers().stream()
+                .anyMatch(answer -> answer.isAnswer() && answer.getAnswer().equals(submittedAnswer));
+
+        return QuestionSubmitHistory.builder()
                 .question(question)
-                .submittedAnswer(submittedAnswer);
-
-        for (Answer answer : question.getAnswers()) {
-            if (answer.isAnswer() && answer.getAnswer().equals(submittedAnswer)) {
-                return builder.status(HistoryStatus.CORRECT).build();
-            }
-        }
-
-        return builder.status(HistoryStatus.INCORRECT).build();
+                .submittedAnswer(submittedAnswer)
+                .status(correct ? HistoryStatus.CORRECT : HistoryStatus.INCORRECT)
+                .build();
+//
+//        for (Answer answer : question.getAnswers()) {
+//            if (answer.isAnswer() && answer.getAnswer().equals(submittedAnswer)) {
+//                return builder.status(HistoryStatus.CORRECT).build();
+//            }
+//        }
+//
+//        return builder.status(HistoryStatus.INCORRECT).build();
     }
 
     private QuestionSubmitHistory markingDescriptive(Question question, String submittedAnswer) {
