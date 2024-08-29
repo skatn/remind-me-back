@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/signup").permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
