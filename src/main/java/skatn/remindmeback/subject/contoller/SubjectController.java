@@ -10,8 +10,10 @@ import skatn.remindmeback.common.security.dto.AccountDto;
 import skatn.remindmeback.subject.contoller.dto.*;
 import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.repository.SubjectQueryRepository;
-import skatn.remindmeback.subject.repository.dto.SubjectScrollDto;
+import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.service.SubjectService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,8 +60,13 @@ public class SubjectController {
     }
 
     @GetMapping
-    public Scroll<SubjectScrollDto> scrollSubjectList(@AuthUser AccountDto accountDto, @Valid @ModelAttribute SubjectScrollRequest request) {
+    public Scroll<SubjectListDto> scrollSubjectList(@AuthUser AccountDto accountDto, @Valid @ModelAttribute SubjectScrollRequest request) {
         return subjectQueryRepository.scrollSubjectList(accountDto.id(), request, request.getTitle());
+    }
+
+    @GetMapping("/recent")
+    public List<SubjectListDto> getRecentlyUsedSubjects(@AuthUser AccountDto accountDto) {
+        return subjectQueryRepository.getRecentlyUsedSubjects(accountDto.id());
     }
 
 }
