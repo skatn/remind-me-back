@@ -17,7 +17,7 @@ import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
 import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.repository.SubjectQueryRepository;
-import skatn.remindmeback.subject.repository.dto.SubjectScrollDto;
+import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.service.SubjectService;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -139,7 +139,7 @@ class SubjectControllerTest extends ControllerTest {
     void scrollSubjectList() throws Exception {
         // given
         SubjectScrollRequest request = SubjectControllerFixture.scrollRequest();
-        Scroll<SubjectScrollDto> response = SubjectControllerFixture.scrollResponse();
+        Scroll<SubjectListDto> response = SubjectControllerFixture.scrollResponse();
         given(subjectQueryRepository.scrollSubjectList(anyLong(), any(), anyString()))
                 .willReturn(response);
 
