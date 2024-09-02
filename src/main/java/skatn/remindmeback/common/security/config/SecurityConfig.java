@@ -44,7 +44,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/signup").permitAll()
+                        .requestMatchers("/api/signup", "/api/reissue-token").permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

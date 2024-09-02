@@ -140,6 +140,7 @@ public class QuestionService {
                 HashMap<String, String> data = new HashMap<>() {{
                     put("title", question.title());
                     put("body", question.body());
+                    put("subjectId", String.valueOf(question.subjectId()));
                     put("questionId", String.valueOf(question.questionId()));
                 }};
                 fcmService.send(data, question.token());
