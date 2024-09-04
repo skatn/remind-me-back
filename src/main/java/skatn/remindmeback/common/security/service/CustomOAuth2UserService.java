@@ -33,6 +33,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .orElseGet(() -> memberRepository.save(Member.builder()
                                 .name(oAuth2Attribute.getName())
                                 .username(oAuth2Attribute.getUsername())
+                                .password("")
                                 .provider(oAuth2Attribute.getProvider())
                                 .build()
                         )
