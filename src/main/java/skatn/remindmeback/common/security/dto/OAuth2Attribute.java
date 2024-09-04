@@ -31,8 +31,7 @@ public class OAuth2Attribute {
 
         return OAuth2Attribute.builder()
                 .provider(provider)
-//                .username((String) kakaoAccount.get("email"))
-                .username((String) kakaoProfile.get("nickname")) // email을 가져오려면 비즈 앱으로 등록해야 되서 임시로 nickname 사용
+                .username(provider + "_" + attributes.get("id"))
                 .name((String) kakaoProfile.get("nickname"))
                 .build();
     }
@@ -41,15 +40,14 @@ public class OAuth2Attribute {
 
         return OAuth2Attribute.builder()
                 .provider(provider)
-//                .username((String) attributes.get("email"))
-                .username((String) attributes.get("nickname"))
+                .username(provider + "_" + attributes.get("id"))
                 .name((String) attributes.get("nickname"))
                 .build();
     }
     private static OAuth2Attribute ofGoogle(String provider, Map<String, Object> attributes) {
         return OAuth2Attribute.builder()
                 .provider(provider)
-                .username((String) attributes.get("email"))
+                .username(provider + "_" + attributes.get("sub"))
                 .name((String) attributes.get("name"))
                 .build();
     }
