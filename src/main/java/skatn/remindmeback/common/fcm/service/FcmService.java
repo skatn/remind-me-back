@@ -74,6 +74,14 @@ public class FcmService {
         fcmTokenRepository.save(fcmToken);
     }
 
+    @Transactional
+    public void deleteToken(String refreshToken) {
+        RefreshToken findRefreshToken = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new AuthException(ErrorCode.JWT_INVALID_REFRESH_TOKEN));
+
+        fcmTokenRepository.deleteByRefreshTokenGroup(findRefreshToken.getTokenGroup());
+    }
+
     private String getAccessToken() {
         try {
             GoogleCredentials googleCredentials = GoogleCredentials
