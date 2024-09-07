@@ -19,4 +19,6 @@ public class FcmToken {
 
     @Column(unique = true)
     private String token;
+
+    private String refreshTokenGroup;
 }
