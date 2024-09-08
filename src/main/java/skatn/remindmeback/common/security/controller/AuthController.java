@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import skatn.remindmeback.common.fcm.service.FcmService;
 import skatn.remindmeback.common.security.controller.dto.LogoutRequest;
 import skatn.remindmeback.common.security.controller.dto.ReissueTokenRequest;
 import skatn.remindmeback.common.security.controller.dto.SignupRequest;
@@ -23,6 +24,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
+    private final FcmService fcmService;
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -46,6 +48,7 @@ public class AuthController {
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@RequestBody LogoutRequest request) {
+        fcmService.deleteToken(request.refreshToken());
         refreshTokenService.deleteRefreshTokenGroup(request.refreshToken());
     }
 }

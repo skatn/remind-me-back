@@ -21,7 +21,7 @@ public class FcmController {
     @PostMapping("/tokens")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addToken(@AuthUser AccountDto accountDto, @Valid @RequestBody AddFcmTokenRequest request) {
-        fcmService.addToken(accountDto.id(), request.token());
+        fcmService.addToken(accountDto.id(), request.token(), request.refreshToken());
 
     }
 

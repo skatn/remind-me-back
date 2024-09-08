@@ -1,12 +1,12 @@
 package skatn.remindmeback.common.security.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import skatn.remindmeback.common.exception.AuthException;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.exception.ErrorCode;
+import skatn.remindmeback.common.fcm.repository.FcmTokenRepository;
 import skatn.remindmeback.common.security.entity.RefreshToken;
 import skatn.remindmeback.common.security.jwt.JwtProvider;
 import skatn.remindmeback.common.security.jwt.TokenDto;
@@ -26,6 +26,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final FcmTokenRepository fcmTokenRepository;
 
     @Transactional
     public void save(String refreshToken, Long memberId) {
@@ -48,14 +49,19 @@ public class RefreshTokenService {
 
     @Transactional(noRollbackFor = AuthException.class)
     public TokenDto reissue(String refreshToken) {
-        jwtProvider.validateToken(refreshToken);
-
         RefreshToken findRefreshToken = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new AuthException(ErrorCode.JWT_INVALID_REFRESH_TOKEN));
 
-        if(refreshTokenRepository.existsByParentToken(refreshToken)) {
-            refreshTokenRepository.deleteByTokenGroup(findRefreshToken.getTokenGroup());
-            throw new AuthException(ErrorCode.JWT_INVALID_REFRESH_TOKEN);
+        try {
+            jwtProvider.validateToken(refreshToken);
+
+            if (refreshTokenRepository.existsByParentToken(refreshToken)) {
+                refreshTokenRepository.deleteByTokenGroup(findRefreshToken.getTokenGroup());
+                throw new AuthException(ErrorCode.JWT_INVALID_REFRESH_TOKEN);
+            }
+        } catch (AuthException e) {
+            fcmTokenRepository.deleteByRefreshTokenGroup(findRefreshToken.getTokenGroup());
+            throw e;
         }
 
         Member member = memberRepository.findById(findRefreshToken.getMemberId())
@@ -83,11 +89,5 @@ public class RefreshTokenService {
     public void deleteRefreshTokenGroup(String refreshToken) {
         refreshTokenRepository.findByToken(refreshToken)
                 .ifPresent(token -> refreshTokenRepository.deleteByTokenGroup(token.getTokenGroup()));
-    }
-
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정
-    @Transactional
-    public void deleteExpiredTokens() {
-        refreshTokenRepository.deleteByExpirationBefore(LocalDateTime.now());
     }
 }
