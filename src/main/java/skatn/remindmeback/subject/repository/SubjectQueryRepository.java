@@ -9,10 +9,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.common.scroll.ScrollUtils;
+import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
 
 import java.util.List;
+import java.util.Optional;
 
 import static skatn.remindmeback.common.repository.Functions.groupConcat;
 import static skatn.remindmeback.question.entity.QQuestion.question1;
@@ -29,6 +31,16 @@ public class SubjectQueryRepository {
 
     public SubjectQueryRepository(EntityManager entityManager) {
         this.queryFactory = new JPAQueryFactory(entityManager);
+    }
+
+    public Optional<Subject> findById(long subjectId) {
+        Subject findSubject = queryFactory.selectFrom(subject)
+                .leftJoin(subject.tags, subjectTag).fetchJoin()
+                .leftJoin(subjectTag.tag, tag).fetchJoin()
+                .where(subject.id.eq(subjectId))
+                .fetchOne();
+
+        return Optional.ofNullable(findSubject);
     }
 
     public Scroll<SubjectListDto> scrollSubjectList(long memberId, SubjectListQueryCondition condition) {
