@@ -26,7 +26,7 @@ public class SubjectController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SubjectCreateResponse create(@AuthUser AccountDto accountDto, @Valid @RequestBody SubjectCreateRequest request) {
-        Long subjectId = subjectCommandService.create(accountDto.id(), request.title(), request.color());
+        Long subjectId = subjectCommandService.create(accountDto.id(), request.title(), request.color(), request.tags());
         return new SubjectCreateResponse(subjectId);
     }
 
@@ -38,7 +38,7 @@ public class SubjectController {
     @PatchMapping("/{subjectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("subjectId") long subjectId, @Valid @RequestBody SubjectUpdateRequest request) {
-        subjectCommandService.update(subjectId, request.title(), request.color());
+        subjectCommandService.update(subjectId, request.title(), request.color(), request.tags());
     }
 
     @GetMapping("/{subjectId}/notification")

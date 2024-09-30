@@ -9,6 +9,9 @@ import org.hibernate.annotations.SQLRestriction;
 import skatn.remindmeback.common.entity.BaseTimeEntity;
 import skatn.remindmeback.member.entity.Member;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @SuperBuilder
@@ -33,6 +36,10 @@ public class Subject extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member author;
 
+    @Builder.Default
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subject", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<SubjectTag> tags = new ArrayList<>();
+
     private boolean deleted;
 
     public void changeTitle(String title) {
@@ -45,5 +52,17 @@ public class Subject extends BaseTimeEntity {
 
     public void changeEnableNotification(boolean enable) {
         this.isEnableNotification = enable;
+    }
+
+    public void changeTags(List<Tag> tags) {
+        this.tags.clear();
+        for (Tag tag : tags) {
+            this.tags.add(
+                    SubjectTag.builder()
+                            .tag(tag)
+                            .subject(this)
+                            .build()
+            );
+        }
     }
 }
