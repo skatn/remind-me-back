@@ -83,7 +83,7 @@ public class SubjectQueryRepository {
                 .join(question1).on(question1.subject.eq(subject))
                 .join(questionSubmitHistory).on(questionSubmitHistory.question.eq(question1))
                 .where(questionSubmitHistory.createdBy.eq(memberId))
-                .orderBy(questionSubmitHistory.createdAt.desc())
+                .orderBy(questionSubmitHistory.createdAt.max().desc())
                 .groupBy(subject.id)
                 .limit(10)
                 .fetch();
