@@ -12,11 +12,11 @@ import skatn.remindmeback.common.security.annotation.AuthUser;
 import skatn.remindmeback.common.security.dto.AccountDto;
 import skatn.remindmeback.question.controller.dto.*;
 import skatn.remindmeback.question.dto.QuestionDto;
-import skatn.remindmeback.question.repository.QuestionQueryRepository;
 import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
 import skatn.remindmeback.question.entity.QuestionType;
-import skatn.remindmeback.question.service.QuestionService;
-import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryQueryRepository;
+import skatn.remindmeback.question.service.QuestionCommandService;
+import skatn.remindmeback.question.service.QuestionQueryService;
+import skatn.remindmeback.submithistory.QuestionSubmitHistoryQueryService;
 import skatn.remindmeback.submithistory.repository.dto.QuestionSubmitHistoryCountDto;
 
 import java.util.List;
@@ -27,9 +27,9 @@ import java.util.Map;
 @RequestMapping("/api/questions")
 public class QuestionController {
 
-    private final QuestionService questionService;
-    private final QuestionQueryRepository questionQueryRepository;
-    private final QuestionSubmitHistoryQueryRepository questionSubmitHistoryQueryRepository;
+    private final QuestionCommandService questionCommandService;
+    private final QuestionQueryService questionQueryService;
+    private final QuestionSubmitHistoryQueryService questionSubmitHistoryQueryService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -38,13 +38,13 @@ public class QuestionController {
 
         validateCreateRequest(request, bindingResult);
 
-        long questionId = questionService.create(request.toQuestionCreateDto());
+        long questionId = questionCommandService.create(request.toQuestionCreateDto());
         return new QuestionCreateResponse(questionId);
     }
 
     @GetMapping("/{questionId}")
     public QuestionDto get(@PathVariable("questionId") long questionId) {
-        return questionService.findOne(questionId);
+        return questionQueryService.getQuestion(questionId);
     }
 
     @PatchMapping("/{questionId}")
@@ -55,35 +55,35 @@ public class QuestionController {
 
         validateUpdateRequest(request, bindingResult);
 
-        questionService.update(request.toQuestionUpdateDto(questionId));
+        questionCommandService.update(request.toQuestionUpdateDto(questionId));
     }
 
     @DeleteMapping("/{questionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("questionId") long questionId) {
-        questionService.delete(questionId);
+        questionCommandService.delete(questionId);
     }
 
     @GetMapping
     @PreAuthorize("@subjectAuthorizationManager.hasReadPermission(authentication, #request.subjectId)")
     public Scroll<QuestionScrollDto> scrollQuestionList(@Valid @ModelAttribute QuestionScrollRequest request) {
-        return questionQueryRepository.scrollQuestionList(request.getSubjectId(), request);
+        return questionQueryService.getQuestionList(request);
     }
 
     @PostMapping("/submit")
     public QuestionMarkingResponse submit(@Valid @RequestBody QuestionMarkingRequest request) {
-        boolean correct = questionService.submit(request.questionId(), request.submittedAnswer());
+        boolean correct = questionCommandService.submit(request.questionId(), request.submittedAnswer());
         return new QuestionMarkingResponse(correct);
     }
 
     @GetMapping("/histories/{year}")
     public Map<String, List<QuestionSubmitHistoryCountDto>> getDailyWithinYear(@AuthUser AccountDto accountDto, @PathVariable("year") int year) {
-        return questionSubmitHistoryQueryRepository.getDailyWithinYear(accountDto.id(), year);
+        return questionSubmitHistoryQueryService.getDailyWithinYear(accountDto.id(), year);
     }
 
     @GetMapping("/histories/last-30-days")
     public List<QuestionSubmitHistoryCountDto> getLast30Days(@AuthUser AccountDto accountDto) {
-        return questionSubmitHistoryQueryRepository.getLast30Days(accountDto.id());
+        return questionSubmitHistoryQueryService.getLast30Days(accountDto.id());
     }
 
     private void validateCreateRequest(QuestionCreateRequest request, BindingResult bindingResult) throws BindException {

@@ -8,14 +8,14 @@ import skatn.remindmeback.common.security.annotation.AuthUser;
 import skatn.remindmeback.common.security.dto.AccountDto;
 import skatn.remindmeback.member.controller.dto.MemberProfileGetResponse;
 import skatn.remindmeback.member.controller.dto.MemberProfileUpdateRequest;
-import skatn.remindmeback.member.service.MemberService;
+import skatn.remindmeback.member.service.MemberCommandService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberCommandService memberCommandService;
 
 
     @GetMapping("/me")
@@ -26,12 +26,12 @@ public class MemberController {
     @PatchMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateProfile(@AuthUser AccountDto accountDto, @Valid @RequestBody MemberProfileUpdateRequest request) {
-        memberService.update(accountDto.id(), request.name());
+        memberCommandService.update(accountDto.id(), request.name());
     }
 
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(@AuthUser AccountDto accountDto) {
-        memberService.deleteAccount(accountDto.id());
+        memberCommandService.deleteAccount(accountDto.id());
     }
 }

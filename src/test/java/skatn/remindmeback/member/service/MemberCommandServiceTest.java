@@ -22,10 +22,10 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
-class MemberServiceTest {
+class MemberCommandServiceTest {
 
     @InjectMocks
-    MemberService memberService;
+    MemberCommandService memberCommandService;
 
     @Mock
     MemberRepository memberRepository;
@@ -44,7 +44,7 @@ class MemberServiceTest {
         doNothing().when(refreshTokenRepository).deleteByMemberId(anyLong());
 
         // when
-        memberService.deleteAccount(memberId);
+        memberCommandService.deleteAccount(memberId);
 
         // then
         assertThat(member.isActive()).isFalse();
@@ -60,7 +60,7 @@ class MemberServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> memberService.deleteAccount(memberId))
+        assertThatThrownBy(() -> memberCommandService.deleteAccount(memberId))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -74,7 +74,7 @@ class MemberServiceTest {
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
 
         // when
-        memberService.update(memberId, newName);
+        memberCommandService.update(memberId, newName);
 
         // then
         assertThat(member.getName()).isEqualTo(newName);
@@ -90,7 +90,7 @@ class MemberServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> memberService.update(memberId, newName))
+        assertThatThrownBy(() -> memberCommandService.update(memberId, newName))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 

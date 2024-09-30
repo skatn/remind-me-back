@@ -15,7 +15,6 @@ import skatn.remindmeback.common.similarirty.SimilarityAnalyzer;
 import skatn.remindmeback.question.dto.QuestionCreateDto;
 import skatn.remindmeback.question.dto.QuestionDto;
 import skatn.remindmeback.question.dto.QuestionUpdateDto;
-import skatn.remindmeback.question.entity.Answer;
 import skatn.remindmeback.question.entity.Question;
 import skatn.remindmeback.question.entity.QuestionType;
 import skatn.remindmeback.question.repository.QuestionQueryRepository;
@@ -26,8 +25,6 @@ import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryReposito
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -36,7 +33,7 @@ import static org.mockito.BDDMockito.*;
 class QuestionServiceTest {
 
     @InjectMocks
-    QuestionService questionService;
+    QuestionCommandService questionCommandService;
 
 
     @Mock
@@ -62,7 +59,7 @@ class QuestionServiceTest {
         given(questionRepository.save(any())).willReturn(Question.builder().id(1L).build());
 
         // when
-        long questionId = questionService.create(questionCreateDto);
+        long questionId = questionCommandService.create(questionCreateDto);
 
         // then
         assertThat(questionId).isEqualTo(1L);
@@ -77,7 +74,7 @@ class QuestionServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> questionService.create(questionCreateDto))
+        assertThatThrownBy(() -> questionCommandService.create(questionCreateDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -89,7 +86,7 @@ class QuestionServiceTest {
         given(questionRepository.findById(anyLong())).willReturn(Optional.of(question));
 
         // when
-        QuestionDto questionDto = questionService.findOne(question.getId());
+        QuestionDto questionDto = questionCommandService.findOne(question.getId());
 
         // then
         assertThat(questionDto).isEqualTo(new QuestionDto(question));
@@ -104,7 +101,7 @@ class QuestionServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> questionService.findOne(questionId))
+        assertThatThrownBy(() -> questionCommandService.findOne(questionId))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -117,7 +114,7 @@ class QuestionServiceTest {
         given(questionRepository.findById(anyLong())).willReturn(Optional.of(question));
 
         // when
-        questionService.update(updateDto);
+        questionCommandService.update(updateDto);
 
         // then
         assertThat(question.getQuestion()).isEqualTo(updateDto.question());
@@ -138,7 +135,7 @@ class QuestionServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> questionService.update(updateDto))
+        assertThatThrownBy(() -> questionCommandService.update(updateDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -150,7 +147,7 @@ class QuestionServiceTest {
         given(questionRepository.findById(anyLong())).willReturn(Optional.of(question));
 
         // when
-        questionService.delete(question.getId());
+        questionCommandService.delete(question.getId());
 
         // then
         then(questionRepository).should().delete(question);
@@ -164,7 +161,7 @@ class QuestionServiceTest {
         given(questionRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
-        questionService.delete(questionId);
+        questionCommandService.delete(questionId);
 
         // then
         then(questionRepository).should(never()).delete(any());
@@ -179,7 +176,7 @@ class QuestionServiceTest {
         given(questionRepository.findById(anyLong())).willReturn(Optional.of(question));
 
         // when
-        boolean isCorrect = questionService.submit(question.getId(), submittedAnswer);
+        boolean isCorrect = questionCommandService.submit(question.getId(), submittedAnswer);
 
         // then
         assertThat(isCorrect).isTrue();
@@ -194,7 +191,7 @@ class QuestionServiceTest {
         given(questionRepository.findById(anyLong())).willReturn(Optional.of(question));
 
         // when
-        boolean isCorrect = questionService.submit(question.getId(), submittedAnswer);
+        boolean isCorrect = questionCommandService.submit(question.getId(), submittedAnswer);
 
         // then
         assertThat(isCorrect).isFalse();
@@ -209,7 +206,7 @@ class QuestionServiceTest {
                 .willReturn(notificationDtos);
 
         // when
-        questionService.notification();
+        questionCommandService.notification();
 
         // then
         then(fcmService).should(times(notificationDtos.size())).send(any(), any());

@@ -8,14 +8,13 @@ import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.exception.ErrorCode;
 import skatn.remindmeback.member.entity.Member;
 import skatn.remindmeback.member.repository.MemberRepository;
-import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class SubjectService {
+public class SubjectCommandService {
 
     private final MemberRepository memberRepository;
     private final SubjectRepository subjectRepository;
@@ -32,13 +31,6 @@ public class SubjectService {
                 .build()).getId();
     }
 
-    @PreAuthorize("@subjectAuthorizationManager.hasReadPermission(authentication, #subjectId)")
-    public SubjectDto findOne(long subjectId) {
-        Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
-
-        return new SubjectDto(subject);
-    }
 
     @Transactional
     @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectId)")
