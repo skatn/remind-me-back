@@ -18,7 +18,7 @@ import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
 import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.repository.SubjectQueryRepository;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
-import skatn.remindmeback.subject.service.SubjectService;
+import skatn.remindmeback.subject.service.SubjectCommandService;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SubjectControllerTest extends ControllerTest {
 
     @MockBean
-    SubjectService subjectService;
+    SubjectCommandService subjectCommandService;
     @MockBean
     SubjectQueryRepository subjectQueryRepository;
 
@@ -40,7 +40,7 @@ class SubjectControllerTest extends ControllerTest {
     void create() throws Exception {
         // given
         SubjectCreateRequest request = SubjectControllerFixture.createRequest();
-        given(subjectService.create(anyLong(), anyString(), anyString())).willReturn(1L);
+        given(subjectCommandService.create(anyLong(), anyString(), anyString())).willReturn(1L);
 
         // when
         ResultActions result = mockMvc.perform(post("/api/subjects")
@@ -57,7 +57,7 @@ class SubjectControllerTest extends ControllerTest {
     void getSubject() throws Exception {
         // given
         SubjectDto subjectDto = SubjectFixture.subjectDto();
-        given(subjectService.findOne(anyLong())).willReturn(subjectDto);
+        given(subjectCommandService.findOne(anyLong())).willReturn(subjectDto);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/subjects/{subjectId}", subjectDto.id()));
@@ -76,7 +76,7 @@ class SubjectControllerTest extends ControllerTest {
         // given
         long subjectId = 1L;
         SubjectUpdateRequest request = SubjectControllerFixture.updateRequest();
-        doNothing().when(subjectService).update(anyLong(), anyString(), anyString());
+        doNothing().when(subjectCommandService).update(anyLong(), anyString(), anyString());
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/subjects/{subjectId}", subjectId)
@@ -92,7 +92,7 @@ class SubjectControllerTest extends ControllerTest {
     void getNotificationStatus() throws Exception {
         // given
         long subjectId = 1L;
-        given(subjectService.getNotificationStatus(anyLong())).willReturn(false);
+        given(subjectCommandService.getNotificationStatus(anyLong())).willReturn(false);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/subjects/{subjectId}/notification", subjectId));
@@ -108,7 +108,7 @@ class SubjectControllerTest extends ControllerTest {
         // given
         long subjectId = 1L;
         SubjectNotificationUpdateRequest request = SubjectControllerFixture.notificationUpdateRequest();
-        doNothing().when(subjectService).updateNotification(anyLong(), anyBoolean());
+        doNothing().when(subjectCommandService).updateNotification(anyLong(), anyBoolean());
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/subjects/{subjectId}/notification", subjectId)
@@ -124,7 +124,7 @@ class SubjectControllerTest extends ControllerTest {
     void deleteSubject() throws Exception {
         // given
         long subjectId = 1L;
-        doNothing().when(subjectService).delete(anyLong());
+        doNothing().when(subjectCommandService).delete(anyLong());
 
         // when
         ResultActions result = mockMvc.perform(delete("/api/subjects/{subjectId}", subjectId));

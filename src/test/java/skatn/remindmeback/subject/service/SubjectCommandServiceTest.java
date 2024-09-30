@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SubjectServiceTest {
+class SubjectCommandServiceTest {
 
     @InjectMocks
-    SubjectService subjectService;
+    SubjectCommandService subjectCommandService;
 
     @Mock
     MemberRepository memberRepository;
@@ -42,7 +42,7 @@ class SubjectServiceTest {
         given(subjectRepository.save(any())).willReturn(subject);
 
         // when
-        long subjectId = subjectService.create(authorId, title, color);
+        long subjectId = subjectCommandService.create(authorId, title, color);
 
         // then
         assertThat(subjectId).isEqualTo(subject.getId());
@@ -59,7 +59,7 @@ class SubjectServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> subjectService.create(authorId, title, color))
+        assertThatThrownBy(() -> subjectCommandService.create(authorId, title, color))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -71,7 +71,7 @@ class SubjectServiceTest {
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
-        SubjectDto subjectDto = subjectService.findOne(subject.getId());
+        SubjectDto subjectDto = subjectCommandService.findOne(subject.getId());
 
         // then
         assertThat(subjectDto.id()).isEqualTo(subject.getId());
@@ -88,7 +88,7 @@ class SubjectServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> subjectService.findOne(subjectId))
+        assertThatThrownBy(() -> subjectCommandService.findOne(subjectId))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -102,7 +102,7 @@ class SubjectServiceTest {
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
-        subjectService.update(subject.getId(), newTitle, newColor);
+        subjectCommandService.update(subject.getId(), newTitle, newColor);
 
         // then
         assertThat(subject.getTitle()).isEqualTo(newTitle);
@@ -120,7 +120,7 @@ class SubjectServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> subjectService.update(subjectId, newTitle, newColor))
+        assertThatThrownBy(() -> subjectCommandService.update(subjectId, newTitle, newColor))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -132,7 +132,7 @@ class SubjectServiceTest {
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
-        subjectService.delete(subject.getId());
+        subjectCommandService.delete(subject.getId());
 
         // then
         then(subjectRepository).should().delete(subject);
@@ -146,7 +146,7 @@ class SubjectServiceTest {
         given(subjectRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
-        subjectService.delete(subjectId);
+        subjectCommandService.delete(subjectId);
 
         // then
         then(subjectRepository).should(never()).delete(any());
@@ -160,7 +160,7 @@ class SubjectServiceTest {
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
-        boolean status = subjectService.getNotificationStatus(subject.getId());
+        boolean status = subjectCommandService.getNotificationStatus(subject.getId());
 
         // then
         assertThat(status).isEqualTo(subject.isEnableNotification());
@@ -175,7 +175,7 @@ class SubjectServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> subjectService.getNotificationStatus(subjectId))
+        assertThatThrownBy(() -> subjectCommandService.getNotificationStatus(subjectId))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -188,7 +188,7 @@ class SubjectServiceTest {
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
-        subjectService.updateNotification(subject.getId(), status);
+        subjectCommandService.updateNotification(subject.getId(), status);
 
         // then
         assertThat(subject.isEnableNotification()).isEqualTo(status);
@@ -204,7 +204,7 @@ class SubjectServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> subjectService.updateNotification(subjectId, status))
+        assertThatThrownBy(() -> subjectCommandService.updateNotification(subjectId, status))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 

@@ -10,7 +10,7 @@ import skatn.remindmeback.common.controller.ControllerTest;
 import skatn.remindmeback.common.fixture.MemberControllerFixture;
 import skatn.remindmeback.common.security.WithRestMockUser;
 import skatn.remindmeback.member.controller.dto.MemberProfileUpdateRequest;
-import skatn.remindmeback.member.service.MemberService;
+import skatn.remindmeback.member.service.MemberCommandService;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class MemberControllerTest extends ControllerTest {
 
     @MockBean
-    MemberService memberService;
+    MemberCommandService memberCommandService;
 
     @Test
     @DisplayName("회원 프로필을 조회한다")
@@ -46,7 +46,7 @@ class MemberControllerTest extends ControllerTest {
     void changeName() throws Exception {
         // given
         MemberProfileUpdateRequest request = MemberControllerFixture.profileUpdateRequest();
-        doNothing().when(memberService).update(anyLong(), anyString());
+        doNothing().when(memberCommandService).update(anyLong(), anyString());
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/members/me")

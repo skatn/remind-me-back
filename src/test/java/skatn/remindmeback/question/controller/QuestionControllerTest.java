@@ -19,7 +19,7 @@ import skatn.remindmeback.question.dto.QuestionDto;
 import skatn.remindmeback.question.entity.QuestionType;
 import skatn.remindmeback.question.repository.QuestionQueryRepository;
 import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
-import skatn.remindmeback.question.service.QuestionService;
+import skatn.remindmeback.question.service.QuestionCommandService;
 import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryQueryRepository;
 import skatn.remindmeback.submithistory.repository.dto.QuestionSubmitHistoryCountDto;
 
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class QuestionControllerTest extends ControllerTest {
 
     @MockBean
-    QuestionService questionService;
+    QuestionCommandService questionCommandService;
     @MockBean
     QuestionQueryRepository questionQueryRepository;
     @MockBean
@@ -48,7 +48,7 @@ class QuestionControllerTest extends ControllerTest {
     void create() throws Exception {
         // given
         QuestionCreateRequest request = QuestionControllerFixture.createRequest();
-        given(questionService.create(any())).willReturn(1L);
+        given(questionCommandService.create(any())).willReturn(1L);
 
         // when
         ResultActions result = mockMvc.perform(post("/api/questions")
@@ -120,7 +120,7 @@ class QuestionControllerTest extends ControllerTest {
     void getQuestion() throws Exception {
         // given
         QuestionDto question = new QuestionDto(QuestionServiceFixture.question());
-        given(questionService.findOne(question.id())).willReturn(question);
+        given(questionCommandService.findOne(question.id())).willReturn(question);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/questions/{questionId}", question.id()));
@@ -139,7 +139,7 @@ class QuestionControllerTest extends ControllerTest {
     void update() throws Exception {
         // given
         QuestionUpdateRequest request = QuestionControllerFixture.updateRequest();
-        doNothing().when(questionService).update(any());
+        doNothing().when(questionCommandService).update(any());
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/questions/{questionId}", 1)
@@ -191,7 +191,7 @@ class QuestionControllerTest extends ControllerTest {
     @DisplayName("문제를 삭제한다")
     void deleteQuestion() throws Exception {
         // given
-        doNothing().when(questionService).delete(anyLong());
+        doNothing().when(questionCommandService).delete(anyLong());
 
         // when
         ResultActions result = mockMvc.perform(delete("/api/questions/{questionId}", 1));
@@ -229,7 +229,7 @@ class QuestionControllerTest extends ControllerTest {
     void submit() throws Exception {
         // given
         QuestionMarkingRequest request = QuestionControllerFixture.markingRequest();
-        given(questionService.submit(anyLong(), anyString())).willReturn(true);
+        given(questionCommandService.submit(anyLong(), anyString())).willReturn(true);
 
         // when
         ResultActions result = mockMvc.perform(post("/api/questions/submit")

@@ -10,9 +10,9 @@ import skatn.remindmeback.member.entity.Member;
 import skatn.remindmeback.member.repository.MemberRepository;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class MemberService {
+public class MemberCommandService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
