@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import skatn.remindmeback.common.scroll.ScrollRequest;
 
+import java.util.List;
+
 @Getter
 @Setter
 @SuperBuilder
@@ -14,4 +16,5 @@ import skatn.remindmeback.common.scroll.ScrollRequest;
 @AllArgsConstructor
 public class SubjectScrollRequest extends ScrollRequest<Long, Long> {
     private String title;
+    private List<String> tags;
 }

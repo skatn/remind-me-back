@@ -10,6 +10,7 @@ import skatn.remindmeback.common.security.dto.AccountDto;
 import skatn.remindmeback.subject.contoller.dto.*;
 import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
+import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
 import skatn.remindmeback.subject.service.SubjectCommandService;
 import skatn.remindmeback.subject.service.SubjectQueryService;
 
@@ -61,7 +62,8 @@ public class SubjectController {
 
     @GetMapping
     public Scroll<SubjectListDto> scrollSubjectList(@AuthUser AccountDto accountDto, @Valid @ModelAttribute SubjectScrollRequest request) {
-        return subjectQueryService.getSubjectList(accountDto.id(), request, request.getTitle());
+        SubjectListQueryCondition condition = new SubjectListQueryCondition(request, request.getTitle(), request.getTags());
+        return subjectQueryService.getSubjectList(accountDto.id(), condition);
     }
 
     @GetMapping("/recent")

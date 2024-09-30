@@ -7,12 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.exception.ErrorCode;
 import skatn.remindmeback.common.scroll.Scroll;
-import skatn.remindmeback.common.scroll.ScrollRequest;
 import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.repository.SubjectQueryRepository;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
+import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
 
 import java.util.List;
 
@@ -32,8 +32,8 @@ public class SubjectQueryService {
         return new SubjectDto(subject);
     }
 
-    public Scroll<SubjectListDto> getSubjectList(long memberId, ScrollRequest<Long, Long> scrollRequest, String title) {
-        return subjectQueryRepository.scrollSubjectList(memberId, scrollRequest, title);
+    public Scroll<SubjectListDto> getSubjectList(long memberId, SubjectListQueryCondition condition) {
+        return subjectQueryRepository.scrollSubjectList(memberId, condition);
     }
 
     public List<SubjectListDto> getRecentlyUsedSubjects(long memberId) {
