@@ -10,4 +10,10 @@ public class Functions {
         return Expressions.stringTemplate("group_concat({0})", path);
     }
 
+    static public StringTemplate groupConcatDistinct(Path<?> path) {
+        return Expressions.stringTemplate("group_concat(distinct {0})", path);
+    }
+
+
+
 }

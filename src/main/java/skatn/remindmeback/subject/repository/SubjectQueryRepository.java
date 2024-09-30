@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static skatn.remindmeback.common.repository.Functions.groupConcat;
+import static skatn.remindmeback.common.repository.Functions.groupConcatDistinct;
 import static skatn.remindmeback.question.entity.QQuestion.question1;
 import static skatn.remindmeback.subject.entity.QSubject.subject;
 import static skatn.remindmeback.subject.entity.QSubjectTag.*;
@@ -74,12 +75,14 @@ public class SubjectQueryRepository {
                         subject.color,
                         JPAExpressions.select(question1.id.count())
                                 .from(question1)
-                                .where(question1.subject.eq(subject))
+                                .where(question1.subject.eq(subject)),
+                        groupConcatDistinct(tag.name)
                 ))
                 .from(subject)
+                .leftJoin(subject.tags, subjectTag).leftJoin(subjectTag.tag, tag)
                 .join(question1).on(question1.subject.eq(subject))
                 .join(questionSubmitHistory).on(questionSubmitHistory.question.eq(question1))
-                .where(subject.author.id.eq(memberId))
+                .where(questionSubmitHistory.createdBy.eq(memberId))
                 .orderBy(questionSubmitHistory.createdAt.desc())
                 .groupBy(subject.id)
                 .limit(10)
