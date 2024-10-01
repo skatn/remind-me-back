@@ -2,6 +2,7 @@ package skatn.remindmeback.subject.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -99,6 +100,6 @@ public class SubjectQueryRepository {
 
     private BooleanExpression tagIn(List<String> tags) {
         if(tags == null || tags.isEmpty()) return null;
-        return tag.name.in(tags).count().gt(0);
+        return Expressions.numberTemplate(Integer.class, "sum({0})", tag.name.in(tags)).gt(0);
     }
 }
