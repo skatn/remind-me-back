@@ -9,7 +9,11 @@ import skatn.remindmeback.common.exception.ErrorCode;
 import skatn.remindmeback.member.entity.Member;
 import skatn.remindmeback.member.repository.MemberRepository;
 import skatn.remindmeback.subject.entity.Subject;
+import skatn.remindmeback.subject.entity.Tag;
 import skatn.remindmeback.subject.repository.SubjectRepository;
+import skatn.remindmeback.subject.repository.TagRepository;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -18,28 +22,48 @@ public class SubjectCommandService {
 
     private final MemberRepository memberRepository;
     private final SubjectRepository subjectRepository;
+    private final TagRepository tagRepository;
 
     @Transactional
-    public long create(long authorId, String title, String color) {
+    public long create(long authorId, String title, String color, List<String> tags) {
         Member author = memberRepository.findById(authorId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return subjectRepository.save(Subject.builder()
+
+        Subject subject = subjectRepository.save(Subject.builder()
                 .author(author)
                 .title(title)
                 .color(color)
-                .build()).getId();
+                .build());
+
+        if(tags != null) {
+            List<Tag> findTags = tags.stream()
+                    .map(tag -> tagRepository.findByName(tag).orElseGet(() -> tagRepository.save(Tag.builder().name(tag).build())))
+                    .toList();
+
+            subject.changeTags(findTags);
+        }
+
+        return subject.getId();
     }
 
 
     @Transactional
     @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectId)")
-    public void update(long subjectId, String title, String color) {
+    public void update(long subjectId, String title, String color, List<String> tags) {
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
 
         subject.changeTitle(title);
         subject.changeColor(color);
+
+        if(tags != null) {
+            List<Tag> findTags = tags.stream()
+                    .map(tag -> tagRepository.findByName(tag).orElseGet(() -> tagRepository.save(Tag.builder().name(tag).build())))
+                    .toList();
+
+            subject.changeTags(findTags);
+        }
     }
 
     @Transactional

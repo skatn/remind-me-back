@@ -10,6 +10,7 @@ import skatn.remindmeback.common.security.dto.AccountDto;
 import skatn.remindmeback.subject.contoller.dto.*;
 import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
+import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
 import skatn.remindmeback.subject.service.SubjectCommandService;
 import skatn.remindmeback.subject.service.SubjectQueryService;
 
@@ -26,7 +27,7 @@ public class SubjectController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SubjectCreateResponse create(@AuthUser AccountDto accountDto, @Valid @RequestBody SubjectCreateRequest request) {
-        Long subjectId = subjectCommandService.create(accountDto.id(), request.title(), request.color());
+        Long subjectId = subjectCommandService.create(accountDto.id(), request.title(), request.color(), request.tags());
         return new SubjectCreateResponse(subjectId);
     }
 
@@ -38,7 +39,7 @@ public class SubjectController {
     @PatchMapping("/{subjectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("subjectId") long subjectId, @Valid @RequestBody SubjectUpdateRequest request) {
-        subjectCommandService.update(subjectId, request.title(), request.color());
+        subjectCommandService.update(subjectId, request.title(), request.color(), request.tags());
     }
 
     @GetMapping("/{subjectId}/notification")
@@ -61,7 +62,8 @@ public class SubjectController {
 
     @GetMapping
     public Scroll<SubjectListDto> scrollSubjectList(@AuthUser AccountDto accountDto, @Valid @ModelAttribute SubjectScrollRequest request) {
-        return subjectQueryService.getSubjectList(accountDto.id(), request, request.getTitle());
+        SubjectListQueryCondition condition = new SubjectListQueryCondition(request, request.getTitle(), request.getTags());
+        return subjectQueryService.getSubjectList(accountDto.id(), condition);
     }
 
     @GetMapping("/recent")
