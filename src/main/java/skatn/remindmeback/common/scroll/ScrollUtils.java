@@ -8,7 +8,6 @@ public class ScrollUtils {
         R nextCursor = null;
         if(contents.size() > size) {
             nextCursor = getCursor.apply(contents.get(contents.size() - 1));
-            contents.remove(contents.size() - 1);
         }
 
         return nextCursor;

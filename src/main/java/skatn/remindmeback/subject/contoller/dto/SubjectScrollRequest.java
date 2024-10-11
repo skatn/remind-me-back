@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import skatn.remindmeback.common.scroll.ScrollRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,7 +15,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubjectScrollRequest extends ScrollRequest<Long, Long> {
+public class SubjectScrollRequest extends ScrollRequest<LocalDateTime, Long> {
     private String title;
     private List<String> tags;
 }
