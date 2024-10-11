@@ -92,6 +92,7 @@ public class SubjectQueryRepository {
                         selectTagsSubQuery(subject)
                 ))
                 .from(subject)
+                .join(question1).on(question1.subject.eq(subject))
                 .join(questionSubmitHistory).on(questionSubmitHistory.question.eq(question1))
                 .where(questionSubmitHistory.createdBy.eq(memberId))
                 .groupBy(subject.id)
