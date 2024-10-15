@@ -7,13 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
-import skatn.remindmeback.common.fixture.MemberFixture;
 import skatn.remindmeback.common.fixture.SubjectFixture;
 import skatn.remindmeback.member.repository.MemberRepository;
-import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -34,15 +33,14 @@ class SubjectCommandServiceTest {
     @DisplayName("문제집을 생성한다")
     void create() {
         // given
-        long authorId = 1L;
-        String title = "title";
-        String color = "FF0000";
-        Subject subject = SubjectFixture.subject();
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(MemberFixture.member()));
+        Subject subject = SubjectFixture.java();
+        List<String> tags = List.of("java", "programming");
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(subject.getAuthor()));
         given(subjectRepository.save(any())).willReturn(subject);
 
         // when
-        long subjectId = subjectCommandService.create(authorId, title, color);
+        long subjectId = subjectCommandService.create(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), tags);
 
         // then
         assertThat(subjectId).isEqualTo(subject.getId());
@@ -52,75 +50,53 @@ class SubjectCommandServiceTest {
     @DisplayName("문제집 생성시 작성자가 존재하지 않으면 예외가 발생한다.")
     void createFailWithoutAuthor() {
         // given
-        long authorId = 1L;
-        String title = "title";
-        String color = "FF0000";
+        Subject subject = SubjectFixture.java();
+        List<String> tags = List.of("java", "programming");
+
         given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
         // then
-        assertThatThrownBy(() -> subjectCommandService.create(authorId, title, color))
+        assertThatThrownBy(() -> subjectCommandService.create(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), tags))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
-    @Test
-    @DisplayName("문제집을 단건 조회한다")
-    void findOne() {
-        // given
-        Subject subject = SubjectFixture.subject();
-        given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
-        // when
-        SubjectDto subjectDto = subjectCommandService.findOne(subject.getId());
-
-        // then
-        assertThat(subjectDto.id()).isEqualTo(subject.getId());
-        assertThat(subjectDto.color()).isEqualTo(subject.getColor());
-        assertThat(subjectDto.title()).isEqualTo(subject.getTitle());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 문제집을 단건 조회할 경우 예외가 발생한다")
-    void findOneFailNotFound() {
-        // given
-        long subjectId = 1L;
-        given(subjectRepository.findById(anyLong())).willReturn(Optional.empty());
-
-        // when
-        // then
-        assertThatThrownBy(() -> subjectCommandService.findOne(subjectId))
-                .isInstanceOf(EntityNotFoundException.class);
-    }
 
     @Test
     @DisplayName("문제집 정보를 수정한다")
     void update() {
         // given
-        Subject subject = SubjectFixture.subject();
+        Subject subject = SubjectFixture.java();
         String newTitle = "newTitle";
         String newColor = "00FF00";
+        List<String> tags = List.of("java", "programming");
+
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
-        subjectCommandService.update(subject.getId(), newTitle, newColor);
+        subjectCommandService.update(subject.getId(), newTitle, newColor, tags);
 
         // then
         assertThat(subject.getTitle()).isEqualTo(newTitle);
         assertThat(subject.getColor()).isEqualTo(newColor);
+        assertThat(subject.getTags())
+                .extracting(subjectTag -> subjectTag.getTag().getName())
+                .containsOnly("java", "programming");
     }
 
     @Test
     @DisplayName("수정하려는 문제집이 존재하지 않으면 예외가 발생한다")
     void updateFailNotFound() {
         // given
-        long subjectId = 1L;
+        Subject subject = SubjectFixture.java();
         String newTitle = "newTitle";
         String newColor = "00FF00";
-        given(subjectRepository.findById(anyLong())).willReturn(Optional.empty());
+        List<String> tags = List.of("java", "programming");
 
         // when
         // then
-        assertThatThrownBy(() -> subjectCommandService.update(subjectId, newTitle, newColor))
+        assertThatThrownBy(() -> subjectCommandService.update(subject.getId(), newTitle, newColor, tags))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -128,7 +104,7 @@ class SubjectCommandServiceTest {
     @DisplayName("문제집을 삭제한다")
     void delete() {
         // given
-        Subject subject = SubjectFixture.subject();
+        Subject subject = SubjectFixture.java();
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
@@ -156,7 +132,7 @@ class SubjectCommandServiceTest {
     @DisplayName("문제집의 알림 설정 상태를 조회한다")
     void getNotificationStatus() {
         // given
-        Subject subject = SubjectFixture.subject();
+        Subject subject = SubjectFixture.java();
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
@@ -184,7 +160,7 @@ class SubjectCommandServiceTest {
     void updateNotificationStatus() {
         // given
         boolean status = true;
-        Subject subject = SubjectFixture.subject();
+        Subject subject = SubjectFixture.java();
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when

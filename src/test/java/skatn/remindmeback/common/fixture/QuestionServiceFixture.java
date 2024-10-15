@@ -34,7 +34,7 @@ public class QuestionServiceFixture {
 
     public static Question question() {
         Question question = Question.builder()
-                .subject(SubjectFixture.subject())
+                .subject(SubjectFixture.java())
                 .id(1L)
                 .question("question")
                 .questionImage("/image.png")
@@ -60,7 +60,7 @@ public class QuestionServiceFixture {
         Set<Answer> descriptiveAnswers = Set.of(Answer.builder().id(1L).answer("answer 1").isAnswer(true).build());
 
         Question question = Question.builder()
-                .subject(SubjectFixture.subject())
+                .subject(SubjectFixture.java())
                 .id(1L)
                 .question("question")
                 .questionImage("/image.png")

@@ -38,7 +38,7 @@ class MemberCommandServiceTest {
     void deleteAccount() {
         // given
         long memberId = 1L;
-        Member member = MemberFixture.member();
+        Member member = MemberFixture.jake();
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         doNothing().when(refreshTokenRepository).deleteByMemberId(anyLong());
@@ -70,7 +70,7 @@ class MemberCommandServiceTest {
         // given
         long memberId = 1L;
         String newName = "newName";
-        Member member = MemberFixture.member();
+        Member member = MemberFixture.jake();
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
 
         // when
