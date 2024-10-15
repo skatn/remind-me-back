@@ -33,6 +33,11 @@ public class Subject extends BaseTimeEntity {
     @ColumnDefault("true")
     private boolean isEnableNotification = true;
 
+    @Builder.Default
+    @ColumnDefault("'PUBLIC'")
+    @Enumerated(EnumType.STRING)
+    private Visibility visibility = Visibility.PUBLIC;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Member author;
 
