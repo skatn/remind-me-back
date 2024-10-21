@@ -8,22 +8,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
-import skatn.remindmeback.common.fcm.service.FcmService;
 import skatn.remindmeback.common.fixture.QuestionServiceFixture;
 import skatn.remindmeback.common.fixture.SubjectFixture;
 import skatn.remindmeback.common.similarirty.SimilarityAnalyzer;
 import skatn.remindmeback.question.dto.QuestionCreateDto;
-import skatn.remindmeback.question.dto.QuestionDto;
 import skatn.remindmeback.question.dto.QuestionUpdateDto;
 import skatn.remindmeback.question.entity.Question;
 import skatn.remindmeback.question.entity.QuestionType;
-import skatn.remindmeback.question.repository.QuestionQueryRepository;
 import skatn.remindmeback.question.repository.QuestionRepository;
-import skatn.remindmeback.question.repository.dto.QuestionNotificationDto;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -35,19 +30,14 @@ class QuestionServiceTest {
     @InjectMocks
     QuestionCommandService questionCommandService;
 
-
+    @Mock
+    SimilarityAnalyzer similarityAnalyzer;
     @Mock
     QuestionRepository questionRepository;
     @Mock
     SubjectRepository subjectRepository;
     @Mock
-    SimilarityAnalyzer similarityAnalyzer;
-    @Mock
     QuestionSubmitHistoryRepository questionSubmitHistoryRepository;
-    @Mock
-    QuestionQueryRepository questionQueryRepository;
-    @Mock
-    FcmService fcmService;
 
     @Test
     @DisplayName("문제를 생성한다")
@@ -55,7 +45,7 @@ class QuestionServiceTest {
         // given
         QuestionCreateDto questionCreateDto = QuestionServiceFixture.createDto();
         given(subjectRepository.findById(anyLong()))
-                .willReturn(Optional.of(SubjectFixture.subject()));
+                .willReturn(Optional.of(SubjectFixture.java()));
         given(questionRepository.save(any())).willReturn(Question.builder().id(1L).build());
 
         // when
@@ -75,33 +65,6 @@ class QuestionServiceTest {
         // when
         // then
         assertThatThrownBy(() -> questionCommandService.create(questionCreateDto))
-                .isInstanceOf(EntityNotFoundException.class);
-    }
-
-    @Test
-    @DisplayName("문제를 단건 조회한다")
-    void findOne() {
-        // given
-        Question question = QuestionServiceFixture.question();
-        given(questionRepository.findById(anyLong())).willReturn(Optional.of(question));
-
-        // when
-        QuestionDto questionDto = questionCommandService.findOne(question.getId());
-
-        // then
-        assertThat(questionDto).isEqualTo(new QuestionDto(question));
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 문제를 조회하면 예외가 발생한다")
-    void findOneFailNotFound() {
-        // given
-        long questionId = 1L;
-        given(questionRepository.findById(anyLong())).willReturn(Optional.empty());
-
-        // when
-        // then
-        assertThatThrownBy(() -> questionCommandService.findOne(questionId))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -189,27 +152,13 @@ class QuestionServiceTest {
         String submittedAnswer = "incorrect";
         Question question = QuestionServiceFixture.question(QuestionType.DESCRIPTIVE);
         given(questionRepository.findById(anyLong())).willReturn(Optional.of(question));
+        given(similarityAnalyzer.compare(anyString(), anyString())).willReturn(false);
 
         // when
         boolean isCorrect = questionCommandService.submit(question.getId(), submittedAnswer);
 
         // then
         assertThat(isCorrect).isFalse();
-    }
-
-    @Test
-    @DisplayName("문제 풀이 FCM Push 알림을 발송한다")
-    void notification() {
-        // given
-        List<QuestionNotificationDto> notificationDtos = QuestionServiceFixture.notificationDto();
-        given(questionQueryRepository.getQuestionsForNotification(any()))
-                .willReturn(notificationDtos);
-
-        // when
-        questionCommandService.notification();
-
-        // then
-        then(fcmService).should(times(notificationDtos.size())).send(any(), any());
     }
 
 }

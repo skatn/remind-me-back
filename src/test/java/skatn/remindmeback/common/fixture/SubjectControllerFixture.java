@@ -7,16 +7,17 @@ import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SubjectControllerFixture {
 
-    public static SubjectCreateRequest createRequest() {
-        return new SubjectCreateRequest("title", "000000");
+    public static SubjectCreateRequest createJavaRequest() {
+        return new SubjectCreateRequest("java", "000000", List.of("java", "programming"));
     }
 
-    public static SubjectUpdateRequest updateRequest() {
-        return new SubjectUpdateRequest("newTitle", "FFFFFF");
+    public static SubjectUpdateRequest updateJavaRequest() {
+        return new SubjectUpdateRequest("newJava", "FFFFFF", List.of("java", "programming"));
     }
 
     public static SubjectNotificationUpdateRequest notificationUpdateRequest() {
@@ -24,21 +25,21 @@ public class SubjectControllerFixture {
     }
 
     public static SubjectScrollRequest scrollRequest() {
-        return new SubjectScrollRequest("");
+        return SubjectScrollRequest.builder().build();
     }
 
     public static Scroll<SubjectListDto> scrollResponse() {
         return new Scroll<>(List.of(
-            new SubjectListDto(1L, "subject 1", "FFFFFF", 10),
-            new SubjectListDto(2L, "subject 2", "FFFFFF", 10),
-            new SubjectListDto(3L, "subject 3", "FFFFFF", 10),
-            new SubjectListDto(4L, "subject 4", "FFFFFF", 10),
-            new SubjectListDto(5L, "subject 5", "FFFFFF", 10),
-            new SubjectListDto(6L, "subject 6", "FFFFFF", 10),
-            new SubjectListDto(7L, "subject 7", "FFFFFF", 10),
-            new SubjectListDto(8L, "subject 8", "FFFFFF", 10),
-            new SubjectListDto(9L, "subject 9", "FFFFFF", 10),
-            new SubjectListDto(10L, "subject 10", "FFFFFF", 10)
+            new SubjectListDto(1L, "subject 1", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 2", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 3", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 4", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 5", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 6", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 7", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 8", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 9", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2")),
+                new SubjectListDto(1L, "subject 10", "FFFFFF", LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 1, 1, 0, 0), 10, List.of("tag1", "tag2"))
         ), null, null);
     }
 

@@ -43,6 +43,7 @@ public class QuestionQueryRepository {
                 .fetch();
 
         Long nextCursor = ScrollUtils.getNextCursor(questions, scrollRequest.getSize(), QuestionScrollDto::id);
+        if(nextCursor != null) questions.remove(questions.size() - 1);
 
         return new Scroll<>(questions, nextCursor, null);
     }
