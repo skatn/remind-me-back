@@ -5,6 +5,7 @@ import skatn.remindmeback.subject.contoller.dto.SubjectCreateRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectNotificationUpdateRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
+import skatn.remindmeback.subject.entity.Visibility;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import java.util.List;
 public class SubjectControllerFixture {
 
     public static SubjectCreateRequest createJavaRequest() {
-        return new SubjectCreateRequest("java", "000000", List.of("java", "programming"));
+        return new SubjectCreateRequest("java", "000000", Visibility.PUBLIC, List.of("java", "programming"));
     }
 
     public static SubjectUpdateRequest updateJavaRequest() {

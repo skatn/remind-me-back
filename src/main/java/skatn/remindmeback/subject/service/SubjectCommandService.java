@@ -12,6 +12,7 @@ import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.entity.Tag;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 import skatn.remindmeback.subject.repository.TagRepository;
+import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
 
 import java.util.List;
 
@@ -25,19 +26,20 @@ public class SubjectCommandService {
     private final TagRepository tagRepository;
 
     @Transactional
-    public long create(long authorId, String title, String color, List<String> tags) {
-        Member author = memberRepository.findById(authorId)
+    public long create(SubjectCreateDto subjectCreateDto) {
+        Member author = memberRepository.findById(subjectCreateDto.authorId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 
         Subject subject = subjectRepository.save(Subject.builder()
                 .author(author)
-                .title(title)
-                .color(color)
+                .title(subjectCreateDto.title())
+                .color(subjectCreateDto.color())
+                .visibility(subjectCreateDto.visibility())
                 .build());
 
-        if(tags != null) {
-            List<Tag> findTags = tags.stream()
+        if(subjectCreateDto.tags() != null) {
+            List<Tag> findTags = subjectCreateDto.tags().stream()
                     .map(tag -> tagRepository.findByName(tag).orElseGet(() -> tagRepository.save(Tag.builder().name(tag).build())))
                     .toList();
 

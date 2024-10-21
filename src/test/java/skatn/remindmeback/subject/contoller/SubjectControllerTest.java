@@ -40,7 +40,7 @@ class SubjectControllerTest extends ControllerTest {
     void create() throws Exception {
         // given
         SubjectCreateRequest request = SubjectControllerFixture.createJavaRequest();
-        given(subjectCommandService.create(anyLong(), anyString(), anyString(), anyList())).willReturn(1L);
+        given(subjectCommandService.create(any())).willReturn(1L);
 
         // when
         ResultActions result = mockMvc.perform(post("/api/subjects")

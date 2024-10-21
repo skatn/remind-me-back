@@ -13,6 +13,7 @@ import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
 import skatn.remindmeback.subject.service.SubjectCommandService;
 import skatn.remindmeback.subject.service.SubjectQueryService;
+import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class SubjectController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SubjectCreateResponse create(@AuthUser AccountDto accountDto, @Valid @RequestBody SubjectCreateRequest request) {
-        Long subjectId = subjectCommandService.create(accountDto.id(), request.title(), request.color(), request.tags());
+        Long subjectId = subjectCommandService.create(new SubjectCreateDto(accountDto.id(), request.title(), request.color(), request.visibility(), request.tags()));
         return new SubjectCreateResponse(subjectId);
     }
 

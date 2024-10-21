@@ -11,8 +11,10 @@ import skatn.remindmeback.common.fixture.SubjectFixture;
 import skatn.remindmeback.common.fixture.TagFixture;
 import skatn.remindmeback.member.repository.MemberRepository;
 import skatn.remindmeback.subject.entity.Subject;
+import skatn.remindmeback.subject.entity.Visibility;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 import skatn.remindmeback.subject.repository.TagRepository;
+import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,14 +40,14 @@ class SubjectCommandServiceTest {
     void create() {
         // given
         Subject subject = SubjectFixture.java();
-        List<String> tags = List.of("java", "programming");
+        SubjectCreateDto subjectCreateDto = new SubjectCreateDto(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), Visibility.PUBLIC, List.of("java", "programming"));
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(subject.getAuthor()));
         given(subjectRepository.save(any())).willReturn(subject);
         given(tagRepository.findByName(anyString())).willReturn(Optional.empty());
 
         // when
-        long subjectId = subjectCommandService.create(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), tags);
+        long subjectId = subjectCommandService.create(subjectCreateDto);
 
         // then
         assertThat(subjectId).isEqualTo(subject.getId());
@@ -56,13 +58,13 @@ class SubjectCommandServiceTest {
     void createFailWithoutAuthor() {
         // given
         Subject subject = SubjectFixture.java();
-        List<String> tags = List.of("java", "programming");
+        SubjectCreateDto subjectCreateDto = new SubjectCreateDto(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), Visibility.PUBLIC, List.of("java", "programming"));
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
         // then
-        assertThatThrownBy(() -> subjectCommandService.create(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), tags))
+        assertThatThrownBy(() -> subjectCommandService.create(subjectCreateDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 

@@ -59,6 +59,10 @@ public class Subject extends BaseTimeEntity {
         this.isEnableNotification = enable;
     }
 
+    public void changeVisibility(Visibility visibility) {
+        this.visibility = visibility;
+    }
+
     public void changeTags(List<Tag> tags) {
         this.tags.clear();
         for (Tag tag : tags) {
