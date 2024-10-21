@@ -15,6 +15,7 @@ import skatn.remindmeback.subject.entity.Visibility;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 import skatn.remindmeback.subject.repository.TagRepository;
 import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
+import skatn.remindmeback.subject.service.dto.SubjectUpdateDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -75,20 +76,18 @@ class SubjectCommandServiceTest {
     void update() {
         // given
         Subject subject = SubjectFixture.java();
-        String newTitle = "newTitle";
-        String newColor = "00FF00";
-        List<String> tags = List.of("java", "programming");
+        SubjectUpdateDto subjectUpdateDto = new SubjectUpdateDto(subject.getId(), "newTitle", "00FF00", Visibility.PUBLIC, List.of("java", "programming"));
 
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
         given(tagRepository.findByName(eq("java"))).willReturn(Optional.of(TagFixture.java()));
         given(tagRepository.findByName(eq("programming"))).willReturn(Optional.of(TagFixture.programming()));
 
         // when
-        subjectCommandService.update(subject.getId(), newTitle, newColor, tags);
+        subjectCommandService.update(subjectUpdateDto);
 
         // then
-        assertThat(subject.getTitle()).isEqualTo(newTitle);
-        assertThat(subject.getColor()).isEqualTo(newColor);
+        assertThat(subject.getTitle()).isEqualTo("newTitle");
+        assertThat(subject.getColor()).isEqualTo("00FF00");
         assertThat(subject.getTags())
                 .extracting(subjectTag -> subjectTag.getTag().getName())
                 .containsOnly("java", "programming");
@@ -99,13 +98,11 @@ class SubjectCommandServiceTest {
     void updateFailNotFound() {
         // given
         Subject subject = SubjectFixture.java();
-        String newTitle = "newTitle";
-        String newColor = "00FF00";
-        List<String> tags = List.of("java", "programming");
+        SubjectUpdateDto subjectUpdateDto = new SubjectUpdateDto(subject.getId(), "newTitle", "00FF00", Visibility.PUBLIC, List.of("java", "programming"));
 
         // when
         // then
-        assertThatThrownBy(() -> subjectCommandService.update(subject.getId(), newTitle, newColor, tags))
+        assertThatThrownBy(() -> subjectCommandService.update(subjectUpdateDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 

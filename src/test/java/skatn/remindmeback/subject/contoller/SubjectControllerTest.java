@@ -76,7 +76,7 @@ class SubjectControllerTest extends ControllerTest {
         // given
         long subjectId = 1L;
         SubjectUpdateRequest request = SubjectControllerFixture.updateJavaRequest();
-        doNothing().when(subjectCommandService).update(anyLong(), anyString(), anyString(), anyList());
+        doNothing().when(subjectCommandService).update(any());
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/subjects/{subjectId}", subjectId)

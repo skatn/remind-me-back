@@ -18,7 +18,7 @@ public class SubjectControllerFixture {
     }
 
     public static SubjectUpdateRequest updateJavaRequest() {
-        return new SubjectUpdateRequest("newJava", "FFFFFF", List.of("java", "programming"));
+        return new SubjectUpdateRequest("newJava", "FFFFFF", Visibility.PUBLIC, List.of("java", "programming"));
     }
 
     public static SubjectNotificationUpdateRequest notificationUpdateRequest() {

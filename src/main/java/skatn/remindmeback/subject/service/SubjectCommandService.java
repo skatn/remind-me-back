@@ -13,6 +13,7 @@ import skatn.remindmeback.subject.entity.Tag;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 import skatn.remindmeback.subject.repository.TagRepository;
 import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
+import skatn.remindmeback.subject.service.dto.SubjectUpdateDto;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class SubjectCommandService {
                 .visibility(subjectCreateDto.visibility())
                 .build());
 
-        if(subjectCreateDto.tags() != null) {
+        if (subjectCreateDto.tags() != null) {
             List<Tag> findTags = subjectCreateDto.tags().stream()
                     .map(tag -> tagRepository.findByName(tag).orElseGet(() -> tagRepository.save(Tag.builder().name(tag).build())))
                     .toList();
@@ -51,16 +52,17 @@ public class SubjectCommandService {
 
 
     @Transactional
-    @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectId)")
-    public void update(long subjectId, String title, String color, List<String> tags) {
-        Subject subject = subjectRepository.findById(subjectId)
+    @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectUpdateDto.subjectId())")
+    public void update(SubjectUpdateDto subjectUpdateDto) {
+        Subject subject = subjectRepository.findById(subjectUpdateDto.subjectId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
 
-        subject.changeTitle(title);
-        subject.changeColor(color);
+        if (subjectUpdateDto.title() != null) subject.changeTitle(subjectUpdateDto.title());
+        if (subjectUpdateDto.color() != null) subject.changeColor(subjectUpdateDto.color());
+        if (subjectUpdateDto.visibility() != null) subject.changeVisibility(subjectUpdateDto.visibility());
 
-        if(tags != null) {
-            List<Tag> findTags = tags.stream()
+        if (subjectUpdateDto.tags() != null) {
+            List<Tag> findTags = subjectUpdateDto.tags().stream()
                     .map(tag -> tagRepository.findByName(tag).orElseGet(() -> tagRepository.save(Tag.builder().name(tag).build())))
                     .toList();
 

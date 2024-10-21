@@ -14,6 +14,7 @@ import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
 import skatn.remindmeback.subject.service.SubjectCommandService;
 import skatn.remindmeback.subject.service.SubjectQueryService;
 import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
+import skatn.remindmeback.subject.service.dto.SubjectUpdateDto;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class SubjectController {
     @PatchMapping("/{subjectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("subjectId") long subjectId, @Valid @RequestBody SubjectUpdateRequest request) {
-        subjectCommandService.update(subjectId, request.title(), request.color(), request.tags());
+        subjectCommandService.update(new SubjectUpdateDto(subjectId, request.title(), request.color(), request.visibility(), request.tags()));
     }
 
     @GetMapping("/{subjectId}/notification")
