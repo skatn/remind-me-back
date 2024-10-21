@@ -8,9 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.fixture.SubjectFixture;
+import skatn.remindmeback.common.fixture.TagFixture;
 import skatn.remindmeback.member.repository.MemberRepository;
 import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.repository.SubjectRepository;
+import skatn.remindmeback.subject.repository.TagRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,8 @@ class SubjectCommandServiceTest {
     MemberRepository memberRepository;
     @Mock
     SubjectRepository subjectRepository;
+    @Mock
+    TagRepository tagRepository;
 
     @Test
     @DisplayName("문제집을 생성한다")
@@ -38,6 +42,7 @@ class SubjectCommandServiceTest {
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(subject.getAuthor()));
         given(subjectRepository.save(any())).willReturn(subject);
+        given(tagRepository.findByName(anyString())).willReturn(Optional.empty());
 
         // when
         long subjectId = subjectCommandService.create(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), tags);
@@ -73,6 +78,8 @@ class SubjectCommandServiceTest {
         List<String> tags = List.of("java", "programming");
 
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
+        given(tagRepository.findByName(eq("java"))).willReturn(Optional.of(TagFixture.java()));
+        given(tagRepository.findByName(eq("programming"))).willReturn(Optional.of(TagFixture.programming()));
 
         // when
         subjectCommandService.update(subject.getId(), newTitle, newColor, tags);

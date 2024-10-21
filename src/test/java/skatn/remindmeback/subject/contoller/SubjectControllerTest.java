@@ -16,7 +16,6 @@ import skatn.remindmeback.subject.contoller.dto.SubjectNotificationUpdateRequest
 import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
 import skatn.remindmeback.subject.dto.SubjectDto;
-import skatn.remindmeback.subject.repository.SubjectQueryRepository;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.service.SubjectCommandService;
 import skatn.remindmeback.subject.service.SubjectQueryService;
@@ -34,8 +33,6 @@ class SubjectControllerTest extends ControllerTest {
     SubjectCommandService subjectCommandService;
     @MockBean
     SubjectQueryService subjectQueryService;
-    @MockBean
-    SubjectQueryRepository subjectQueryRepository;
 
     @Test
     @WithRestMockUser
@@ -143,7 +140,7 @@ class SubjectControllerTest extends ControllerTest {
         // given
         SubjectScrollRequest request = SubjectControllerFixture.scrollRequest();
         Scroll<SubjectListDto> response = SubjectControllerFixture.scrollResponse();
-        given(subjectQueryRepository.scrollSubjectList(anyLong(), any()))
+        given(subjectQueryService.getSubjectList(anyLong(), any()))
                 .willReturn(response);
 
         // when
@@ -160,8 +157,8 @@ class SubjectControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.content[0].title").exists())
                 .andExpect(jsonPath("$.content[0].color").exists())
                 .andExpect(jsonPath("$.content[0].questionCount").exists())
-                .andExpect(jsonPath("$.nextCursor").exists())
-                .andExpect(jsonPath("$.nextSubCursor").exists())
+                .andExpect(jsonPath("$.nextCursor").hasJsonPath())
+                .andExpect(jsonPath("$.nextSubCursor").hasJsonPath())
         ;
     }
 }

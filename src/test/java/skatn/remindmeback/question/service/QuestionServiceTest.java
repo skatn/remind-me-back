@@ -10,12 +10,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.fixture.QuestionServiceFixture;
 import skatn.remindmeback.common.fixture.SubjectFixture;
+import skatn.remindmeback.common.similarirty.SimilarityAnalyzer;
 import skatn.remindmeback.question.dto.QuestionCreateDto;
 import skatn.remindmeback.question.dto.QuestionUpdateDto;
 import skatn.remindmeback.question.entity.Question;
 import skatn.remindmeback.question.entity.QuestionType;
 import skatn.remindmeback.question.repository.QuestionRepository;
 import skatn.remindmeback.subject.repository.SubjectRepository;
+import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryRepository;
 
 import java.util.Optional;
 
@@ -28,11 +30,14 @@ class QuestionServiceTest {
     @InjectMocks
     QuestionCommandService questionCommandService;
 
-
+    @Mock
+    SimilarityAnalyzer similarityAnalyzer;
     @Mock
     QuestionRepository questionRepository;
     @Mock
     SubjectRepository subjectRepository;
+    @Mock
+    QuestionSubmitHistoryRepository questionSubmitHistoryRepository;
 
     @Test
     @DisplayName("문제를 생성한다")
@@ -147,6 +152,7 @@ class QuestionServiceTest {
         String submittedAnswer = "incorrect";
         Question question = QuestionServiceFixture.question(QuestionType.DESCRIPTIVE);
         given(questionRepository.findById(anyLong())).willReturn(Optional.of(question));
+        given(similarityAnalyzer.compare(anyString(), anyString())).willReturn(false);
 
         // when
         boolean isCorrect = questionCommandService.submit(question.getId(), submittedAnswer);

@@ -20,7 +20,7 @@ import skatn.remindmeback.question.entity.QuestionType;
 import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
 import skatn.remindmeback.question.service.QuestionCommandService;
 import skatn.remindmeback.question.service.QuestionQueryService;
-import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryQueryRepository;
+import skatn.remindmeback.submithistory.QuestionSubmitHistoryQueryService;
 import skatn.remindmeback.submithistory.repository.dto.QuestionSubmitHistoryCountDto;
 
 import java.util.List;
@@ -41,7 +41,7 @@ class QuestionControllerTest extends ControllerTest {
     @MockBean
     QuestionQueryService questionQueryService;
     @MockBean
-    QuestionSubmitHistoryQueryRepository questionSubmitHistoryQueryRepository;
+    QuestionSubmitHistoryQueryService questionSubmitHistoryQueryService;
 
     @Test
     @DisplayName("문제를 생성한다")
@@ -223,8 +223,8 @@ class QuestionControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.content[0].id").exists())
                 .andExpect(jsonPath("$.content[0].question").exists())
                 .andExpect(jsonPath("$.content[0].questionType").exists())
-                .andExpect(jsonPath("$.nextCursor").exists())
-                .andExpect(jsonPath("$.nextSubCursor").exists())
+                .andExpect(jsonPath("$.nextCursor").hasJsonPath())
+                .andExpect(jsonPath("$.nextSubCursor").hasJsonPath())
         ;
     }
 
@@ -252,7 +252,7 @@ class QuestionControllerTest extends ControllerTest {
     void getDailyWithinYear() throws Exception {
         // given
         Map<String, List<QuestionSubmitHistoryCountDto>> response = QuestionControllerFixture.withInYearResponse();
-        given(questionSubmitHistoryQueryRepository.getDailyWithinYear(anyLong(), anyInt())).willReturn(response);
+        given(questionSubmitHistoryQueryService.getDailyWithinYear(anyLong(), anyInt())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/questions/histories/{year}", 2024));
@@ -270,7 +270,7 @@ class QuestionControllerTest extends ControllerTest {
     void getLast30Days() throws Exception {
         // given
         List<QuestionSubmitHistoryCountDto> response = QuestionControllerFixture.last30DaysResponse();
-        given(questionSubmitHistoryQueryRepository.getLast30Days(anyLong())).willReturn(response);
+        given(questionSubmitHistoryQueryService.getLast30Days(anyLong())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/questions/histories/last-30-days"));

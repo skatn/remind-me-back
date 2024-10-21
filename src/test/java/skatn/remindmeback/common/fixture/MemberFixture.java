@@ -16,4 +16,15 @@ public class MemberFixture {
                 .updatedAt(LocalDateTime.of(2024, 1, 1, 0, 0))
                 .build();
     }
+
+    public static Member jason() {
+        return Member.builder()
+                .id(2L)
+                .name("jason")
+                .username("jason")
+                .password("jason_password")
+                .createdAt(LocalDateTime.of(2024, 1, 1, 0, 1))
+                .updatedAt(LocalDateTime.of(2024, 1, 1, 0, 1))
+                .build();
+    }
 }

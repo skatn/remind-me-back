@@ -21,4 +21,5 @@ public class SubjectFixture {
     public static SubjectDto subjectDto() {
         return new SubjectDto(java());
     }
+
 }
