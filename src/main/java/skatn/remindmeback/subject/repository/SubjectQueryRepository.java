@@ -61,7 +61,7 @@ public class SubjectQueryRepository {
                 .where(
                         authorIdEq(memberId),
                         ExpressionUtils.or(
-                                createdAtGt(condition.scroll().getCursor()),
+                                createdAtLt(condition.scroll().getCursor()),
                                 ExpressionUtils.and(
                                         createdAtEq(condition.scroll().getCursor()),
                                         subjectIdGoe(condition.scroll().getSubCursor())
@@ -76,8 +76,8 @@ public class SubjectQueryRepository {
 
         LocalDateTime nextCursor = ScrollUtils.getNextCursor(subjects, condition.scroll().getSize(), SubjectListDto::createdAt);
         Long nextSubCursor = ScrollUtils.getNextCursor(subjects, condition.scroll().getSize(), SubjectListDto::id);
+        if(nextCursor != null) subjects.remove(subjects.size() - 1);
 
-        subjects.remove(subjects.size() - 1);
         return new Scroll<>(subjects, nextCursor, nextSubCursor);
     }
 
@@ -105,8 +105,8 @@ public class SubjectQueryRepository {
         return title == null ? null : subject.title.contains(title);
     }
 
-    private BooleanExpression createdAtGt(LocalDateTime createdAt) {
-        return createdAt == null ? null : subject.createdAt.gt(createdAt);
+    private BooleanExpression createdAtLt(LocalDateTime createdAt) {
+        return createdAt == null ? null : subject.createdAt.lt(createdAt);
     }
 
     private BooleanExpression createdAtEq(LocalDateTime createdAt) {

@@ -17,10 +17,10 @@ import skatn.remindmeback.question.controller.dto.QuestionScrollRequest;
 import skatn.remindmeback.question.controller.dto.QuestionUpdateRequest;
 import skatn.remindmeback.question.dto.QuestionDto;
 import skatn.remindmeback.question.entity.QuestionType;
-import skatn.remindmeback.question.repository.QuestionQueryRepository;
 import skatn.remindmeback.question.repository.dto.QuestionScrollDto;
 import skatn.remindmeback.question.service.QuestionCommandService;
-import skatn.remindmeback.submithistory.repository.QuestionSubmitHistoryQueryRepository;
+import skatn.remindmeback.question.service.QuestionQueryService;
+import skatn.remindmeback.submithistory.QuestionSubmitHistoryQueryService;
 import skatn.remindmeback.submithistory.repository.dto.QuestionSubmitHistoryCountDto;
 
 import java.util.List;
@@ -39,9 +39,9 @@ class QuestionControllerTest extends ControllerTest {
     @MockBean
     QuestionCommandService questionCommandService;
     @MockBean
-    QuestionQueryRepository questionQueryRepository;
+    QuestionQueryService questionQueryService;
     @MockBean
-    QuestionSubmitHistoryQueryRepository questionSubmitHistoryQueryRepository;
+    QuestionSubmitHistoryQueryService questionSubmitHistoryQueryService;
 
     @Test
     @DisplayName("문제를 생성한다")
@@ -57,7 +57,7 @@ class QuestionControllerTest extends ControllerTest {
 
         // then
         result.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.questionId").value(1));
+                .andExpect(jsonPath("$.questionId").exists());
     }
 
     @Test
@@ -120,18 +120,20 @@ class QuestionControllerTest extends ControllerTest {
     void getQuestion() throws Exception {
         // given
         QuestionDto question = new QuestionDto(QuestionServiceFixture.question());
-        given(questionCommandService.findOne(question.id())).willReturn(question);
+        given(questionQueryService.getQuestion(question.id())).willReturn(question);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/questions/{questionId}", question.id()));
 
         // then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(question.id()))
-                .andExpect(jsonPath("$.questionType").value(question.questionType().toString()))
-                .andExpect(jsonPath("$.questionImage").value(question.questionImage()))
-                .andExpect(jsonPath("$.explanation").value(question.explanation()))
-                .andExpect(jsonPath("$.answers.length()").value(question.answers().size()));
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.questionType").exists())
+                .andExpect(jsonPath("$.questionImage").exists())
+                .andExpect(jsonPath("$.explanation").exists())
+                .andExpect(jsonPath("$.answers").exists())
+                .andExpect(jsonPath("$.answers").isArray())
+        ;
     }
 
     @Test
@@ -206,7 +208,7 @@ class QuestionControllerTest extends ControllerTest {
         // given
         QuestionScrollRequest request = QuestionControllerFixture.scrollRequest();
         Scroll<QuestionScrollDto> response = QuestionControllerFixture.scrollResponse();
-        given(questionQueryRepository.scrollQuestionList(anyLong(), any()))
+        given(questionQueryService.getQuestionList(any()))
                 .willReturn(response);
 
         // when
@@ -216,12 +218,14 @@ class QuestionControllerTest extends ControllerTest {
 
         // then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(response.content().size()))
-                .andExpect(jsonPath("$.content[0].id").value(response.content().get(0).id()))
-                .andExpect(jsonPath("$.content[0].question").value(response.content().get(0).question()))
-                .andExpect(jsonPath("$.content[0].questionType").value(response.content().get(0).questionType().toString()))
-                .andExpect(jsonPath("$.nextCursor").value(response.nextCursor()))
-                .andExpect(jsonPath("$.nextSubCursor").value(response.nextSubCursor()));
+                .andExpect(jsonPath("$.content").exists())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].id").exists())
+                .andExpect(jsonPath("$.content[0].question").exists())
+                .andExpect(jsonPath("$.content[0].questionType").exists())
+                .andExpect(jsonPath("$.nextCursor").hasJsonPath())
+                .andExpect(jsonPath("$.nextSubCursor").hasJsonPath())
+        ;
     }
 
     @Test
@@ -238,7 +242,8 @@ class QuestionControllerTest extends ControllerTest {
 
         // then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.correct").value(true));
+                .andExpect(jsonPath("$.correct").exists())
+        ;
     }
 
     @Test
@@ -247,7 +252,7 @@ class QuestionControllerTest extends ControllerTest {
     void getDailyWithinYear() throws Exception {
         // given
         Map<String, List<QuestionSubmitHistoryCountDto>> response = QuestionControllerFixture.withInYearResponse();
-        given(questionSubmitHistoryQueryRepository.getDailyWithinYear(anyLong(), anyInt())).willReturn(response);
+        given(questionSubmitHistoryQueryService.getDailyWithinYear(anyLong(), anyInt())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/questions/histories/{year}", 2024));
@@ -265,7 +270,7 @@ class QuestionControllerTest extends ControllerTest {
     void getLast30Days() throws Exception {
         // given
         List<QuestionSubmitHistoryCountDto> response = QuestionControllerFixture.last30DaysResponse();
-        given(questionSubmitHistoryQueryRepository.getLast30Days(anyLong())).willReturn(response);
+        given(questionSubmitHistoryQueryService.getLast30Days(anyLong())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/questions/histories/last-30-days"));

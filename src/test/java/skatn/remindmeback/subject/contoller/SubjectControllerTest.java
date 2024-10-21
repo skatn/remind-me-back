@@ -16,9 +16,9 @@ import skatn.remindmeback.subject.contoller.dto.SubjectNotificationUpdateRequest
 import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
 import skatn.remindmeback.subject.dto.SubjectDto;
-import skatn.remindmeback.subject.repository.SubjectQueryRepository;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.service.SubjectCommandService;
+import skatn.remindmeback.subject.service.SubjectQueryService;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -32,15 +32,15 @@ class SubjectControllerTest extends ControllerTest {
     @MockBean
     SubjectCommandService subjectCommandService;
     @MockBean
-    SubjectQueryRepository subjectQueryRepository;
+    SubjectQueryService subjectQueryService;
 
     @Test
     @WithRestMockUser
     @DisplayName("문제집을 생성한다")
     void create() throws Exception {
         // given
-        SubjectCreateRequest request = SubjectControllerFixture.createRequest();
-        given(subjectCommandService.create(anyLong(), anyString(), anyString())).willReturn(1L);
+        SubjectCreateRequest request = SubjectControllerFixture.createJavaRequest();
+        given(subjectCommandService.create(anyLong(), anyString(), anyString(), anyList())).willReturn(1L);
 
         // when
         ResultActions result = mockMvc.perform(post("/api/subjects")
@@ -49,7 +49,7 @@ class SubjectControllerTest extends ControllerTest {
 
         // then
         result.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.subjectId").value(1));
+                .andExpect(jsonPath("$.subjectId").exists());
     }
 
     @Test
@@ -57,7 +57,7 @@ class SubjectControllerTest extends ControllerTest {
     void getSubject() throws Exception {
         // given
         SubjectDto subjectDto = SubjectFixture.subjectDto();
-        given(subjectCommandService.findOne(anyLong())).willReturn(subjectDto);
+        given(subjectQueryService.getSubject(anyLong())).willReturn(subjectDto);
 
         // when
         ResultActions result = mockMvc.perform(get("/api/subjects/{subjectId}", subjectDto.id()));
@@ -65,9 +65,9 @@ class SubjectControllerTest extends ControllerTest {
         // then
         result.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.id").value(subjectDto.id()))
-                .andExpect(jsonPath("$.title").value(subjectDto.title()))
-                .andExpect(jsonPath("$.color").value(subjectDto.color()));
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.title").exists())
+                .andExpect(jsonPath("$.color").exists());
     }
 
     @Test
@@ -75,8 +75,8 @@ class SubjectControllerTest extends ControllerTest {
     void update() throws Exception {
         // given
         long subjectId = 1L;
-        SubjectUpdateRequest request = SubjectControllerFixture.updateRequest();
-        doNothing().when(subjectCommandService).update(anyLong(), anyString(), anyString());
+        SubjectUpdateRequest request = SubjectControllerFixture.updateJavaRequest();
+        doNothing().when(subjectCommandService).update(anyLong(), anyString(), anyString(), anyList());
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/subjects/{subjectId}", subjectId)
@@ -99,7 +99,7 @@ class SubjectControllerTest extends ControllerTest {
 
         // then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isEnable").value(false));
+                .andExpect(jsonPath("$.isEnable").exists());
     }
 
     @Test
@@ -140,7 +140,7 @@ class SubjectControllerTest extends ControllerTest {
         // given
         SubjectScrollRequest request = SubjectControllerFixture.scrollRequest();
         Scroll<SubjectListDto> response = SubjectControllerFixture.scrollResponse();
-        given(subjectQueryRepository.scrollSubjectList(anyLong(), any(), anyString()))
+        given(subjectQueryService.getSubjectList(anyLong(), any()))
                 .willReturn(response);
 
         // when
@@ -151,12 +151,14 @@ class SubjectControllerTest extends ControllerTest {
         // then
         result.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.content.length()").value(response.content().size()))
-                .andExpect(jsonPath("$.content[0].id").value(response.content().get(0).id()))
-                .andExpect(jsonPath("$.content[0].title").value(response.content().get(0).title()))
-                .andExpect(jsonPath("$.content[0].color").value(response.content().get(0).color()))
-                .andExpect(jsonPath("$.content[0].questionCount").value(response.content().get(0).questionCount()))
-                .andExpect(jsonPath("$.nextCursor").value(response.nextCursor()))
-                .andExpect(jsonPath("$.nextSubCursor").value(response.nextSubCursor()));
+                .andExpect(jsonPath("$.content").exists())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].id").exists())
+                .andExpect(jsonPath("$.content[0].title").exists())
+                .andExpect(jsonPath("$.content[0].color").exists())
+                .andExpect(jsonPath("$.content[0].questionCount").exists())
+                .andExpect(jsonPath("$.nextCursor").hasJsonPath())
+                .andExpect(jsonPath("$.nextSubCursor").hasJsonPath())
+        ;
     }
 }

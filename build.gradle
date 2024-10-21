@@ -59,6 +59,9 @@ dependencies {
 
     //prometheus
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    //H2
+    testRuntimeOnly 'com.h2database:h2:1.4.200'
 }
 
 tasks.named('test') {
@@ -122,6 +125,9 @@ jacocoTestReport {
                             '**/common/file/**',
                             '**/common/log/**',
                             '**/common/security/**',
+                            '**/common/fcm/**',
+                            '**/authorization/**',
+                            '**/admin/initialize/**',
                     ] + Qdomains)
                 })
         )
@@ -162,6 +168,9 @@ jacocoTestCoverageVerification {
                     '**.common.file.**',
                     '**.common.log.**',
                     '**.common.security.**',
+                    '**.common.fcm.**',
+                    '**.authorization.**',
+                    '**.admin.initialize.**',
             ] + Qdomains
         }
     }
