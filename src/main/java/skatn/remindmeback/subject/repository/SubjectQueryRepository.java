@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static skatn.remindmeback.common.repository.Functions.groupConcat;
+import static skatn.remindmeback.member.entity.QMember.member;
 import static skatn.remindmeback.question.entity.QQuestion.question1;
 import static skatn.remindmeback.subject.entity.QSubject.subject;
 import static skatn.remindmeback.subject.entity.QSubjectTag.*;
@@ -55,9 +56,14 @@ public class SubjectQueryRepository {
                         subject.createdAt,
                         subject.updatedAt,
                         selectQuestionCountSubQuery(subject),
-                        selectTagsSubQuery(subject)
+                        selectTagsSubQuery(subject),
+                        Projections.constructor(SubjectListDto.Author.class,
+                                member.id,
+                                member.name
+                        )
                 ))
                 .from(subject)
+                .join(subject.author, member)
                 .where(
                         authorIdEq(memberId),
                         ExpressionUtils.or(
@@ -76,7 +82,7 @@ public class SubjectQueryRepository {
 
         LocalDateTime nextCursor = ScrollUtils.getNextCursor(subjects, condition.scroll().getSize(), SubjectListDto::createdAt);
         Long nextSubCursor = ScrollUtils.getNextCursor(subjects, condition.scroll().getSize(), SubjectListDto::id);
-        if(nextCursor != null) subjects.remove(subjects.size() - 1);
+        if (nextCursor != null) subjects.remove(subjects.size() - 1);
 
         return new Scroll<>(subjects, nextCursor, nextSubCursor);
     }
@@ -89,9 +95,14 @@ public class SubjectQueryRepository {
                         subject.createdAt,
                         subject.updatedAt,
                         selectQuestionCountSubQuery(subject),
-                        selectTagsSubQuery(subject)
+                        selectTagsSubQuery(subject),
+                        Projections.constructor(SubjectListDto.Author.class,
+                                member.id,
+                                member.name
+                        )
                 ))
                 .from(subject)
+                .join(subject.author, member)
                 .join(question1).on(question1.subject.eq(subject))
                 .join(questionSubmitHistory).on(questionSubmitHistory.question.eq(question1))
                 .where(questionSubmitHistory.createdBy.eq(memberId))

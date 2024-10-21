@@ -156,7 +156,13 @@ class SubjectControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.content[0].id").exists())
                 .andExpect(jsonPath("$.content[0].title").exists())
                 .andExpect(jsonPath("$.content[0].color").exists())
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
+                .andExpect(jsonPath("$.content[0].updatedAt").exists())
                 .andExpect(jsonPath("$.content[0].questionCount").exists())
+                .andExpect(jsonPath("$.content[0].tags").exists())
+                .andExpect(jsonPath("$.content[0].author").exists())
+                .andExpect(jsonPath("$.content[0].author.id").exists())
+                .andExpect(jsonPath("$.content[0].author.name").exists())
                 .andExpect(jsonPath("$.nextCursor").hasJsonPath())
                 .andExpect(jsonPath("$.nextSubCursor").hasJsonPath())
         ;
