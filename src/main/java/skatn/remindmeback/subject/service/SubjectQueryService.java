@@ -8,7 +8,6 @@ import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.exception.ErrorCode;
 import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.subject.dto.SubjectDto;
-import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.repository.SubjectQueryRepository;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
@@ -24,10 +23,8 @@ public class SubjectQueryService {
 
     @PreAuthorize("@subjectAuthorizationManager.hasReadPermission(authentication, #subjectId)")
     public SubjectDto getSubject(long subjectId) {
-        Subject subject = subjectQueryRepository.findById(subjectId)
+        return subjectQueryRepository.findById(subjectId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
-
-        return new SubjectDto(subject);
     }
 
     public Scroll<SubjectListDto> getSubjectList(long memberId, SubjectListQueryCondition condition) {
