@@ -2,7 +2,6 @@ package skatn.remindmeback.common.fixture;
 
 import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.subject.contoller.dto.SubjectCreateRequest;
-import skatn.remindmeback.subject.contoller.dto.SubjectNotificationUpdateRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
 import skatn.remindmeback.subject.entity.Visibility;
@@ -18,11 +17,7 @@ public class SubjectControllerFixture {
     }
 
     public static SubjectUpdateRequest updateJavaRequest() {
-        return new SubjectUpdateRequest("newJava", "FFFFFF", Visibility.PUBLIC, List.of("java", "programming"));
-    }
-
-    public static SubjectNotificationUpdateRequest notificationUpdateRequest() {
-        return new SubjectNotificationUpdateRequest(true);
+        return new SubjectUpdateRequest("newJava", "FFFFFF", true, Visibility.PUBLIC, List.of("java", "programming"));
     }
 
     public static SubjectScrollRequest scrollRequest() {

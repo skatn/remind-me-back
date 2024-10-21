@@ -60,7 +60,7 @@ public class SubjectCommandService {
         if (subjectUpdateDto.title() != null) subject.changeTitle(subjectUpdateDto.title());
         if (subjectUpdateDto.color() != null) subject.changeColor(subjectUpdateDto.color());
         if (subjectUpdateDto.visibility() != null) subject.changeVisibility(subjectUpdateDto.visibility());
-
+        if (subjectUpdateDto.isEnableNotification() != null) subject.changeEnableNotification(subjectUpdateDto.isEnableNotification());
         if (subjectUpdateDto.tags() != null) {
             List<Tag> findTags = subjectUpdateDto.tags().stream()
                     .map(tag -> tagRepository.findByName(tag).orElseGet(() -> tagRepository.save(Tag.builder().name(tag).build())))

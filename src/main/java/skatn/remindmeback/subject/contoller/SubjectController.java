@@ -41,19 +41,7 @@ public class SubjectController {
     @PatchMapping("/{subjectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("subjectId") long subjectId, @Valid @RequestBody SubjectUpdateRequest request) {
-        subjectCommandService.update(new SubjectUpdateDto(subjectId, request.title(), request.color(), request.visibility(), request.tags()));
-    }
-
-    @GetMapping("/{subjectId}/notification")
-    public SubjectNotificationResponse getNotificationStatus(@PathVariable("subjectId") long subjectId) {
-        boolean isEnable = subjectCommandService.getNotificationStatus(subjectId);
-        return new SubjectNotificationResponse(isEnable);
-    }
-
-    @PatchMapping("/{subjectId}/notification")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateNotification(@PathVariable("subjectId") long subjectId, @Valid @RequestBody SubjectNotificationUpdateRequest request) {
-        subjectCommandService.updateNotification(subjectId, request.enable());
+        subjectCommandService.update(new SubjectUpdateDto(subjectId, request.title(), request.color(), request.isEnableNotification(), request.visibility(), request.tags()));
     }
 
     @DeleteMapping("/{subjectId}")

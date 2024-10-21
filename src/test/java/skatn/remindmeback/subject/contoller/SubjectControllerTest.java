@@ -12,7 +12,6 @@ import skatn.remindmeback.common.fixture.SubjectFixture;
 import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.common.security.WithRestMockUser;
 import skatn.remindmeback.subject.contoller.dto.SubjectCreateRequest;
-import skatn.remindmeback.subject.contoller.dto.SubjectNotificationUpdateRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
 import skatn.remindmeback.subject.dto.SubjectDto;
@@ -80,38 +79,6 @@ class SubjectControllerTest extends ControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/subjects/{subjectId}", subjectId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
-
-        // then
-        result.andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("문제집 알림 설정 상태를 조회한다")
-    void getNotificationStatus() throws Exception {
-        // given
-        long subjectId = 1L;
-        given(subjectCommandService.getNotificationStatus(anyLong())).willReturn(false);
-
-        // when
-        ResultActions result = mockMvc.perform(get("/api/subjects/{subjectId}/notification", subjectId));
-
-        // then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isEnable").exists());
-    }
-
-    @Test
-    @DisplayName("문제집 알림 설정을 변경한다")
-    void updateNotification() throws Exception {
-        // given
-        long subjectId = 1L;
-        SubjectNotificationUpdateRequest request = SubjectControllerFixture.notificationUpdateRequest();
-        doNothing().when(subjectCommandService).updateNotification(anyLong(), anyBoolean());
-
-        // when
-        ResultActions result = mockMvc.perform(patch("/api/subjects/{subjectId}/notification", subjectId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 

@@ -4,5 +4,5 @@ import skatn.remindmeback.subject.entity.Visibility;
 
 import java.util.List;
 
-public record SubjectUpdateDto(long subjectId, String title, String color, Visibility visibility, List<String> tags) {
+public record SubjectUpdateDto(long subjectId, String title, String color, Boolean isEnableNotification, Visibility visibility, List<String> tags) {
 }
