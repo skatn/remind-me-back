@@ -1,17 +1,47 @@
 package skatn.remindmeback.subject.dto;
 
-import skatn.remindmeback.subject.entity.Subject;
+import skatn.remindmeback.subject.entity.Visibility;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public record SubjectDto(Long id, String title, String color, boolean isEnableNotification, List<String> tags) {
-    public SubjectDto(Subject subject) {
+public record SubjectDto(Long id,
+                         String title,
+                         String color,
+                         boolean isEnableNotification,
+                         Visibility visibility,
+                         LocalDateTime createdAt,
+                         LocalDateTime updatedAt,
+                         long questionCount,
+                         List<String> tags,
+                         Author author) {
+
+    public SubjectDto(Long id,
+                      String title,
+                      String color,
+                      boolean isEnableNotification,
+                      Visibility visibility,
+                      LocalDateTime createdAt,
+                      LocalDateTime updatedAt,
+                      long questionCount,
+                      String tags,
+                      Author author) {
+
         this(
-                subject.getId(),
-                subject.getTitle(),
-                subject.getColor(),
-                subject.isEnableNotification(),
-                subject.getTags().stream().map(tag -> tag.getTag().getName()).toList()
+                id,
+                title,
+                color,
+                isEnableNotification,
+                visibility,
+                createdAt,
+                updatedAt,
+                questionCount,
+                tags == null ? List.of() : List.of(tags.split(",")),
+                author
         );
     }
+
+    public record Author(long id, String name) {
+    }
+
 }

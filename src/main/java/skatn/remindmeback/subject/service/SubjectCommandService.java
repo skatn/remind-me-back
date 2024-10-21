@@ -12,6 +12,8 @@ import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.entity.Tag;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 import skatn.remindmeback.subject.repository.TagRepository;
+import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
+import skatn.remindmeback.subject.service.dto.SubjectUpdateDto;
 
 import java.util.List;
 
@@ -25,19 +27,20 @@ public class SubjectCommandService {
     private final TagRepository tagRepository;
 
     @Transactional
-    public long create(long authorId, String title, String color, List<String> tags) {
-        Member author = memberRepository.findById(authorId)
+    public long create(SubjectCreateDto subjectCreateDto) {
+        Member author = memberRepository.findById(subjectCreateDto.authorId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
 
         Subject subject = subjectRepository.save(Subject.builder()
                 .author(author)
-                .title(title)
-                .color(color)
+                .title(subjectCreateDto.title())
+                .color(subjectCreateDto.color())
+                .visibility(subjectCreateDto.visibility())
                 .build());
 
-        if(tags != null) {
-            List<Tag> findTags = tags.stream()
+        if (subjectCreateDto.tags() != null) {
+            List<Tag> findTags = subjectCreateDto.tags().stream()
                     .map(tag -> tagRepository.findByName(tag).orElseGet(() -> tagRepository.save(Tag.builder().name(tag).build())))
                     .toList();
 
@@ -49,16 +52,17 @@ public class SubjectCommandService {
 
 
     @Transactional
-    @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectId)")
-    public void update(long subjectId, String title, String color, List<String> tags) {
-        Subject subject = subjectRepository.findById(subjectId)
+    @PreAuthorize("@subjectAuthorizationManager.hasWritePermission(authentication, #subjectUpdateDto.subjectId())")
+    public void update(SubjectUpdateDto subjectUpdateDto) {
+        Subject subject = subjectRepository.findById(subjectUpdateDto.subjectId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUBJECT_NOT_FOUND));
 
-        subject.changeTitle(title);
-        subject.changeColor(color);
-
-        if(tags != null) {
-            List<Tag> findTags = tags.stream()
+        if (subjectUpdateDto.title() != null) subject.changeTitle(subjectUpdateDto.title());
+        if (subjectUpdateDto.color() != null) subject.changeColor(subjectUpdateDto.color());
+        if (subjectUpdateDto.visibility() != null) subject.changeVisibility(subjectUpdateDto.visibility());
+        if (subjectUpdateDto.isEnableNotification() != null) subject.changeEnableNotification(subjectUpdateDto.isEnableNotification());
+        if (subjectUpdateDto.tags() != null) {
+            List<Tag> findTags = subjectUpdateDto.tags().stream()
                     .map(tag -> tagRepository.findByName(tag).orElseGet(() -> tagRepository.save(Tag.builder().name(tag).build())))
                     .toList();
 

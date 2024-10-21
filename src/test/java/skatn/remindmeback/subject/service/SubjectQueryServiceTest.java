@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import skatn.remindmeback.common.exception.EntityNotFoundException;
 import skatn.remindmeback.common.fixture.SubjectFixture;
 import skatn.remindmeback.subject.dto.SubjectDto;
-import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.repository.SubjectQueryRepository;
 
 import java.util.Optional;
@@ -33,16 +32,16 @@ class SubjectQueryServiceTest {
     @DisplayName("문제집을 단건 조회한다")
     void findOne() {
         // given
-        Subject subject = SubjectFixture.java();
+        SubjectDto subject = SubjectFixture.subjectDto();
         given(subjectQueryRepository.findById(anyLong())).willReturn(Optional.of(subject));
 
         // when
-        SubjectDto subjectDto = subjectQueryService.getSubject(subject.getId());
+        SubjectDto findSubject = subjectQueryService.getSubject(subject.id());
 
         // then
-        assertThat(subjectDto.id()).isEqualTo(subject.getId());
-        assertThat(subjectDto.color()).isEqualTo(subject.getColor());
-        assertThat(subjectDto.title()).isEqualTo(subject.getTitle());
+        assertThat(findSubject.id()).isEqualTo(subject.id());
+        assertThat(findSubject.title()).isEqualTo(subject.title());
+        assertThat(findSubject.color()).isEqualTo(subject.color());
     }
 
     @Test

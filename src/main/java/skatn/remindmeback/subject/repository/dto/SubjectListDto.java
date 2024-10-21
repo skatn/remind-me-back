@@ -9,7 +9,8 @@ public record SubjectListDto(long id,
                              LocalDateTime createdAt,
                              LocalDateTime updatedAt,
                              long questionCount,
-                             List<String> tags
+                             List<String> tags,
+                             Author author
 ) {
     public SubjectListDto(long id,
                           String title,
@@ -17,7 +18,8 @@ public record SubjectListDto(long id,
                           LocalDateTime createdAt,
                           LocalDateTime updatedAt,
                           long questionCount,
-                          String tags) {
+                          String tags,
+                          Author author) {
 
         this(
                 id,
@@ -26,6 +28,11 @@ public record SubjectListDto(long id,
                 createdAt,
                 updatedAt,
                 questionCount,
-                tags == null ? List.of() : List.of(tags.split(",")));
+                tags == null ? List.of() : List.of(tags.split(",")),
+                author);
     }
+
+    public record Author(long id, String name) {
+    }
+
 }

@@ -18,6 +18,7 @@ import skatn.remindmeback.question.entity.Question;
 import skatn.remindmeback.question.entity.QuestionType;
 import skatn.remindmeback.question.repository.QuestionRepository;
 import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
+import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.entity.Tag;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
@@ -78,13 +79,13 @@ class SubjectQueryRepositoryTest {
             subjectRepository.save(java);
 
             // when
-            Optional<Subject> findJava = subjectQueryRepository.findById(java.getId());
+            Optional<SubjectDto> findJava = subjectQueryRepository.findById(java.getId());
 
             // then
             assertThat(findJava).isNotEmpty();
-            assertThat(findJava.get().getId()).isEqualTo(java.getId());
-            assertThat(findJava.get().getTitle()).isEqualTo(java.getTitle());
-            assertThat(findJava.get().getColor()).isEqualTo(java.getColor());
+            assertThat(findJava.get().id()).isEqualTo(java.getId());
+            assertThat(findJava.get().title()).isEqualTo(java.getTitle());
+            assertThat(findJava.get().color()).isEqualTo(java.getColor());
         }
 
         @Test
@@ -93,7 +94,7 @@ class SubjectQueryRepositoryTest {
             // given
 
             // when
-            Optional<Subject> findSubject = subjectQueryRepository.findById(1L);
+            Optional<SubjectDto> findSubject = subjectQueryRepository.findById(1L);
 
             // then
             assertThat(findSubject).isEmpty();

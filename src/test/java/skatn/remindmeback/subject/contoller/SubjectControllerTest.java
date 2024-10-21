@@ -12,7 +12,6 @@ import skatn.remindmeback.common.fixture.SubjectFixture;
 import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.common.security.WithRestMockUser;
 import skatn.remindmeback.subject.contoller.dto.SubjectCreateRequest;
-import skatn.remindmeback.subject.contoller.dto.SubjectNotificationUpdateRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectScrollRequest;
 import skatn.remindmeback.subject.contoller.dto.SubjectUpdateRequest;
 import skatn.remindmeback.subject.dto.SubjectDto;
@@ -40,7 +39,7 @@ class SubjectControllerTest extends ControllerTest {
     void create() throws Exception {
         // given
         SubjectCreateRequest request = SubjectControllerFixture.createJavaRequest();
-        given(subjectCommandService.create(anyLong(), anyString(), anyString(), anyList())).willReturn(1L);
+        given(subjectCommandService.create(any())).willReturn(1L);
 
         // when
         ResultActions result = mockMvc.perform(post("/api/subjects")
@@ -76,42 +75,10 @@ class SubjectControllerTest extends ControllerTest {
         // given
         long subjectId = 1L;
         SubjectUpdateRequest request = SubjectControllerFixture.updateJavaRequest();
-        doNothing().when(subjectCommandService).update(anyLong(), anyString(), anyString(), anyList());
+        doNothing().when(subjectCommandService).update(any());
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/subjects/{subjectId}", subjectId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
-
-        // then
-        result.andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("문제집 알림 설정 상태를 조회한다")
-    void getNotificationStatus() throws Exception {
-        // given
-        long subjectId = 1L;
-        given(subjectCommandService.getNotificationStatus(anyLong())).willReturn(false);
-
-        // when
-        ResultActions result = mockMvc.perform(get("/api/subjects/{subjectId}/notification", subjectId));
-
-        // then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.isEnable").exists());
-    }
-
-    @Test
-    @DisplayName("문제집 알림 설정을 변경한다")
-    void updateNotification() throws Exception {
-        // given
-        long subjectId = 1L;
-        SubjectNotificationUpdateRequest request = SubjectControllerFixture.notificationUpdateRequest();
-        doNothing().when(subjectCommandService).updateNotification(anyLong(), anyBoolean());
-
-        // when
-        ResultActions result = mockMvc.perform(patch("/api/subjects/{subjectId}/notification", subjectId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -156,7 +123,13 @@ class SubjectControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.content[0].id").exists())
                 .andExpect(jsonPath("$.content[0].title").exists())
                 .andExpect(jsonPath("$.content[0].color").exists())
+                .andExpect(jsonPath("$.content[0].createdAt").exists())
+                .andExpect(jsonPath("$.content[0].updatedAt").exists())
                 .andExpect(jsonPath("$.content[0].questionCount").exists())
+                .andExpect(jsonPath("$.content[0].tags").exists())
+                .andExpect(jsonPath("$.content[0].author").exists())
+                .andExpect(jsonPath("$.content[0].author.id").exists())
+                .andExpect(jsonPath("$.content[0].author.name").exists())
                 .andExpect(jsonPath("$.nextCursor").hasJsonPath())
                 .andExpect(jsonPath("$.nextSubCursor").hasJsonPath())
         ;

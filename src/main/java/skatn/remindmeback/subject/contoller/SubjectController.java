@@ -13,6 +13,8 @@ import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
 import skatn.remindmeback.subject.service.SubjectCommandService;
 import skatn.remindmeback.subject.service.SubjectQueryService;
+import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
+import skatn.remindmeback.subject.service.dto.SubjectUpdateDto;
 
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class SubjectController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SubjectCreateResponse create(@AuthUser AccountDto accountDto, @Valid @RequestBody SubjectCreateRequest request) {
-        Long subjectId = subjectCommandService.create(accountDto.id(), request.title(), request.color(), request.tags());
+        Long subjectId = subjectCommandService.create(new SubjectCreateDto(accountDto.id(), request.title(), request.color(), request.visibility(), request.tags()));
         return new SubjectCreateResponse(subjectId);
     }
 
@@ -39,19 +41,7 @@ public class SubjectController {
     @PatchMapping("/{subjectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("subjectId") long subjectId, @Valid @RequestBody SubjectUpdateRequest request) {
-        subjectCommandService.update(subjectId, request.title(), request.color(), request.tags());
-    }
-
-    @GetMapping("/{subjectId}/notification")
-    public SubjectNotificationResponse getNotificationStatus(@PathVariable("subjectId") long subjectId) {
-        boolean isEnable = subjectCommandService.getNotificationStatus(subjectId);
-        return new SubjectNotificationResponse(isEnable);
-    }
-
-    @PatchMapping("/{subjectId}/notification")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateNotification(@PathVariable("subjectId") long subjectId, @Valid @RequestBody SubjectNotificationUpdateRequest request) {
-        subjectCommandService.updateNotification(subjectId, request.enable());
+        subjectCommandService.update(new SubjectUpdateDto(subjectId, request.title(), request.color(), request.isEnableNotification(), request.visibility(), request.tags()));
     }
 
     @DeleteMapping("/{subjectId}")

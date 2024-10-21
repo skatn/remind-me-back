@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import skatn.remindmeback.common.scroll.Scroll;
 import skatn.remindmeback.common.scroll.ScrollUtils;
+import skatn.remindmeback.subject.dto.SubjectDto;
 import skatn.remindmeback.subject.entity.QSubject;
-import skatn.remindmeback.subject.entity.Subject;
 import skatn.remindmeback.subject.repository.dto.SubjectListDto;
 import skatn.remindmeback.subject.repository.dto.SubjectListQueryCondition;
 
@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static skatn.remindmeback.common.repository.Functions.groupConcat;
+import static skatn.remindmeback.common.repository.Functions.groupConcatDistinct;
+import static skatn.remindmeback.member.entity.QMember.member;
 import static skatn.remindmeback.question.entity.QQuestion.question1;
 import static skatn.remindmeback.subject.entity.QSubject.subject;
 import static skatn.remindmeback.subject.entity.QSubjectTag.*;
@@ -37,11 +39,29 @@ public class SubjectQueryRepository {
         this.queryFactory = new JPAQueryFactory(entityManager);
     }
 
-    public Optional<Subject> findById(long subjectId) {
-        Subject findSubject = queryFactory.selectFrom(subject)
-                .leftJoin(subject.tags, subjectTag).fetchJoin()
-                .leftJoin(subjectTag.tag, tag).fetchJoin()
+    public Optional<SubjectDto> findById(long subjectId) {
+        SubjectDto findSubject = queryFactory.select(Projections.constructor(SubjectDto.class,
+                        subject.id,
+                        subject.title,
+                        subject.color,
+                        subject.isEnableNotification,
+                        subject.visibility,
+                        subject.createdAt,
+                        subject.updatedAt,
+                        question1.countDistinct(),
+                        groupConcatDistinct(tag.name),
+                        Projections.constructor(SubjectDto.Author.class,
+                                member.id,
+                                member.name
+                        )
+                ))
+                .from(subject)
+                .join(subject.author, member)
+                .leftJoin(subject.tags, subjectTag)
+                .leftJoin(subjectTag.tag, tag)
+                .leftJoin(question1).on(question1.subject.eq(subject))
                 .where(subject.id.eq(subjectId))
+                .groupBy(subject)
                 .fetchOne();
 
         return Optional.ofNullable(findSubject);
@@ -55,9 +75,14 @@ public class SubjectQueryRepository {
                         subject.createdAt,
                         subject.updatedAt,
                         selectQuestionCountSubQuery(subject),
-                        selectTagsSubQuery(subject)
+                        selectTagsSubQuery(subject),
+                        Projections.constructor(SubjectListDto.Author.class,
+                                member.id,
+                                member.name
+                        )
                 ))
                 .from(subject)
+                .join(subject.author, member)
                 .where(
                         authorIdEq(memberId),
                         ExpressionUtils.or(
@@ -76,7 +101,7 @@ public class SubjectQueryRepository {
 
         LocalDateTime nextCursor = ScrollUtils.getNextCursor(subjects, condition.scroll().getSize(), SubjectListDto::createdAt);
         Long nextSubCursor = ScrollUtils.getNextCursor(subjects, condition.scroll().getSize(), SubjectListDto::id);
-        if(nextCursor != null) subjects.remove(subjects.size() - 1);
+        if (nextCursor != null) subjects.remove(subjects.size() - 1);
 
         return new Scroll<>(subjects, nextCursor, nextSubCursor);
     }
@@ -89,9 +114,14 @@ public class SubjectQueryRepository {
                         subject.createdAt,
                         subject.updatedAt,
                         selectQuestionCountSubQuery(subject),
-                        selectTagsSubQuery(subject)
+                        selectTagsSubQuery(subject),
+                        Projections.constructor(SubjectListDto.Author.class,
+                                member.id,
+                                member.name
+                        )
                 ))
                 .from(subject)
+                .join(subject.author, member)
                 .join(question1).on(question1.subject.eq(subject))
                 .join(questionSubmitHistory).on(questionSubmitHistory.question.eq(question1))
                 .where(questionSubmitHistory.createdBy.eq(memberId))

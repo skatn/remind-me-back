@@ -11,8 +11,11 @@ import skatn.remindmeback.common.fixture.SubjectFixture;
 import skatn.remindmeback.common.fixture.TagFixture;
 import skatn.remindmeback.member.repository.MemberRepository;
 import skatn.remindmeback.subject.entity.Subject;
+import skatn.remindmeback.subject.entity.Visibility;
 import skatn.remindmeback.subject.repository.SubjectRepository;
 import skatn.remindmeback.subject.repository.TagRepository;
+import skatn.remindmeback.subject.service.dto.SubjectCreateDto;
+import skatn.remindmeback.subject.service.dto.SubjectUpdateDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,14 +41,14 @@ class SubjectCommandServiceTest {
     void create() {
         // given
         Subject subject = SubjectFixture.java();
-        List<String> tags = List.of("java", "programming");
+        SubjectCreateDto subjectCreateDto = new SubjectCreateDto(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), Visibility.PUBLIC, List.of("java", "programming"));
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(subject.getAuthor()));
         given(subjectRepository.save(any())).willReturn(subject);
         given(tagRepository.findByName(anyString())).willReturn(Optional.empty());
 
         // when
-        long subjectId = subjectCommandService.create(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), tags);
+        long subjectId = subjectCommandService.create(subjectCreateDto);
 
         // then
         assertThat(subjectId).isEqualTo(subject.getId());
@@ -56,37 +59,97 @@ class SubjectCommandServiceTest {
     void createFailWithoutAuthor() {
         // given
         Subject subject = SubjectFixture.java();
-        List<String> tags = List.of("java", "programming");
+        SubjectCreateDto subjectCreateDto = new SubjectCreateDto(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), Visibility.PUBLIC, List.of("java", "programming"));
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
         // then
-        assertThatThrownBy(() -> subjectCommandService.create(subject.getAuthor().getId(), subject.getTitle(), subject.getColor(), tags))
+        assertThatThrownBy(() -> subjectCommandService.create(subjectCreateDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
 
 
     @Test
-    @DisplayName("문제집 정보를 수정한다")
-    void update() {
+    @DisplayName("문제집 title을 수정한다")
+    void updateTitle() {
         // given
         Subject subject = SubjectFixture.java();
-        String newTitle = "newTitle";
-        String newColor = "00FF00";
-        List<String> tags = List.of("java", "programming");
+        SubjectUpdateDto subjectUpdateDto = new SubjectUpdateDto(subject.getId(), "newTitle", null, null, null, null);
+        given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
+
+        // when
+        subjectCommandService.update(subjectUpdateDto);
+
+        // then
+        assertThat(subject.getTitle()).isEqualTo("newTitle");
+    }
+
+
+    @Test
+    @DisplayName("문제집 color를 수정한다")
+    void updateColor() {
+        // given
+        Subject subject = SubjectFixture.java();
+        SubjectUpdateDto subjectUpdateDto = new SubjectUpdateDto(subject.getId(), null, "00FF00", null, null, null);
+        given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
+
+        // when
+        subjectCommandService.update(subjectUpdateDto);
+
+        // then
+        assertThat(subject.getColor()).isEqualTo("00FF00");
+    }
+
+
+    @Test
+    @DisplayName("문제집 알림 여부를 수정한다")
+    void updateEnableNotification() {
+        // given
+        Subject subject = SubjectFixture.java();
+        SubjectUpdateDto subjectUpdateDto = new SubjectUpdateDto(subject.getId(), null, null, true, null, null);
+        given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
+
+        // when
+        subjectCommandService.update(subjectUpdateDto);
+
+        // then
+        assertThat(subject.isEnableNotification()).isTrue();
+    }
+
+
+    @Test
+    @DisplayName("문제집 공개 범위를 수정한다")
+    void updateVisibility() {
+        // given
+        Subject subject = SubjectFixture.java();
+        SubjectUpdateDto subjectUpdateDto = new SubjectUpdateDto(subject.getId(), null, null, null, Visibility.PUBLIC, null);
+        given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
+
+        // when
+        subjectCommandService.update(subjectUpdateDto);
+
+        // then
+        assertThat(subject.getVisibility()).isEqualTo(Visibility.PUBLIC);
+    }
+
+
+    @Test
+    @DisplayName("문제집 태그를 수정한다")
+    void updateTag() {
+        // given
+        Subject subject = SubjectFixture.java();
+        SubjectUpdateDto subjectUpdateDto = new SubjectUpdateDto(subject.getId(), null, null, null, null, List.of("java", "programming"));
 
         given(subjectRepository.findById(anyLong())).willReturn(Optional.of(subject));
         given(tagRepository.findByName(eq("java"))).willReturn(Optional.of(TagFixture.java()));
         given(tagRepository.findByName(eq("programming"))).willReturn(Optional.of(TagFixture.programming()));
 
         // when
-        subjectCommandService.update(subject.getId(), newTitle, newColor, tags);
+        subjectCommandService.update(subjectUpdateDto);
 
         // then
-        assertThat(subject.getTitle()).isEqualTo(newTitle);
-        assertThat(subject.getColor()).isEqualTo(newColor);
         assertThat(subject.getTags())
                 .extracting(subjectTag -> subjectTag.getTag().getName())
                 .containsOnly("java", "programming");
@@ -97,13 +160,11 @@ class SubjectCommandServiceTest {
     void updateFailNotFound() {
         // given
         Subject subject = SubjectFixture.java();
-        String newTitle = "newTitle";
-        String newColor = "00FF00";
-        List<String> tags = List.of("java", "programming");
+        SubjectUpdateDto subjectUpdateDto = new SubjectUpdateDto(subject.getId(), null, null, null, null, null);
 
         // when
         // then
-        assertThatThrownBy(() -> subjectCommandService.update(subject.getId(), newTitle, newColor, tags))
+        assertThatThrownBy(() -> subjectCommandService.update(subjectUpdateDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
